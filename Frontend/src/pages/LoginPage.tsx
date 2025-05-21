@@ -15,6 +15,7 @@ function LoginPage() {
     <div style={{ maxWidth: '400px', margin: '0 auto', padding: '20px', textAlign: 'center' }}>
       <h1>Login Page</h1>
       <p>Please enter your credentials to log in.</p>
+      <p className="bg-blue-500 text-white p-4">Hello, Tailwind!</p>
       <form onSubmit={handleSubmit}>
         <div style={{ marginBottom: '15px' }}>
           <label htmlFor="email" style={{ display: 'block', marginBottom: '5px' }}>Email:</label>
