@@ -14,12 +14,22 @@ function LoginPage() {
   };
 
   useEffect(() => {
+    const savedMode = localStorage.getItem('theme');
+    if (savedMode === 'dark') {
+      setDarkMode(true);
+    }
+  }, []);
+  
+  useEffect(() => {
     if (darkMode) {
       document.documentElement.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
     } else {
       document.documentElement.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
     }
   }, [darkMode]);
+  
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900 transition-colors px-4">
