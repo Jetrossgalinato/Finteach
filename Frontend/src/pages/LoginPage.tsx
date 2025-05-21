@@ -14,7 +14,7 @@ function LoginPage() {
   return (
     <div className="w-screen max-w-md mx-auto p-10 text-center">
       <img src={logo} alt="Logo" className="mx-auto mb-4 w-24 h-24" />
-      <h1 className="text-2xl font-bold mb-4">Login Page</h1>
+      <h1 className="text-2xl font-bold mb-4">Welcome to FinTeach!</h1>
       <p className="text-gray-600 mb-6">Please enter your credentials to log in.</p>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
