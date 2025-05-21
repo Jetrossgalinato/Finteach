@@ -47,6 +47,9 @@ function LoginPage() {
             Login
           </button>
         </form>
+        <p className="mt-4 text-gray-600">
+          Don't have an account? <a href="/register" className="text-blue-500 hover:underline">Register here</a>
+        </p>
       </div>
     </div>
   );
