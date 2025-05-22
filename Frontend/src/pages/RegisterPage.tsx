@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { SunIcon, MoonIcon } from '@heroicons/react/16/solid';
+import { SunIcon, MoonIcon, EyeIcon, EyeSlashIcon } from '@heroicons/react/16/solid';
 import axios from 'axios';
 import logo from '../assets/logo.png';
 
@@ -9,6 +9,7 @@ function RegisterPage() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [username, setUsername] = useState('');
   const [darkMode, setDarkMode] = useState(false);
+  const [showPassword, setShowPassword] = useState(false); 
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -107,27 +108,54 @@ function RegisterPage() {
             required
           />
         </div>
-        <div>
+        <div className='relative'>
           <label htmlFor="password" className="block text-left text-gray-700 dark:text-gray-200 mb-1">Password:</label>
           <input
-            type="password"
+            type={showPassword ? 'text' : 'password'} 
             id="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-black dark:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           />
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)} 
+            className="absolute inset-y-0 right-3 flex items-center"
+            aria-label="Toggle password visibility"
+          >
+            {showPassword ? (
+              <EyeSlashIcon className="mt-7 h-5 w-5 text-gray-500" /> 
+            ) : (
+              <EyeIcon className="mt-7 h-5 w-5 text-gray-500" /> 
+            )}
+          </button>
         </div>
-        <div>
+        <div className='relative'>
           <label htmlFor="confirm-password" className="block text-left text-gray-700 dark:text-gray-200 mb-1">Confirm Password:</label>
           <input
-            type="password"
+            type={showPassword ? 'text' : 'password'}
             id="confirm-password"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
             className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-black dark:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           />
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="absolute inset-y-0 right-3 flex items-center"
+            aria-label="Toggle password visibility"
+          >
+            {showPassword ? (
+              <EyeSlashIcon className="mt-7 h-5 w-5 text-gray-500" /> 
+            ) : (
+              <EyeIcon className="mt-7 h-5 w-5 text-gray-500" /> 
+            )}
+          </button>
+          {confirmPassword && password !== confirmPassword && (
+            <p className="text-red-500 text-sm mt-1">Passwords do not match</p>
+          )}
         </div>
         <button
           type="submit"

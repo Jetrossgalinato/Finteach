@@ -8,7 +8,7 @@ function LoginPage() {
   const [password, setPassword] = useState('');
   const [darkMode, setDarkMode] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
-  const [showPassword, setShowPassword] = useState(false); // State for password visibility
+  const [showPassword, setShowPassword] = useState(false); 
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -114,14 +114,14 @@ function LoginPage() {
           />
           <button
             type="button"
-            onClick={() => setShowPassword(!showPassword)} // Toggle visibility
+            onClick={() => setShowPassword(!showPassword)} 
             className="absolute inset-y-0 right-3 flex items-center"
             aria-label="Toggle password visibility"
           >
             {showPassword ? (
-              <EyeSlashIcon className="mt-7 h-5 w-5 text-gray-500" /> // Eye-off icon for hiding password
+              <EyeSlashIcon className="mt-7 h-5 w-5 text-gray-500" /> 
             ) : (
-              <EyeIcon className="mt-7 h-5 w-5 text-gray-500" /> // Eye icon for showing password
+              <EyeIcon className="mt-7 h-5 w-5 text-gray-500" /> 
             )}
           </button>
         </div>
