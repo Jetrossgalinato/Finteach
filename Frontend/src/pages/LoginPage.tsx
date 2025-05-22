@@ -1,30 +1,31 @@
 import React, { useState, useEffect } from 'react';
-import { SunIcon, MoonIcon } from '@heroicons/react/16/solid'; 
-import axios from 'axios'; // Import Axios and AxiosError
+import { SunIcon, MoonIcon, EyeIcon, EyeSlashIcon } from '@heroicons/react/16/solid'; // Import eye icons
+import axios from 'axios';
 import logo from '../assets/logo.png';
 
 function LoginPage() {
-  const [username, setUsername] = useState(''); // Change email to username
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [darkMode, setDarkMode] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [showPassword, setShowPassword] = useState(false); // State for password visibility
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       const response = await axios.post('http://127.0.0.1:8000/accounts/api/token/', {
-        username: username, // Use "username" instead of "email"
+        username: username,
         password: password,
       });
       console.log('Login successful:', response.data);
-  
+
       // Save the access and refresh tokens to localStorage
       localStorage.setItem('accessToken', response.data.access);
       localStorage.setItem('refreshToken', response.data.refresh);
-  
+
       // Show success alert
       alert('Login successful! Redirecting to the dashboard.');
-  
+
       // Redirect to another page (e.g., dashboard)
       window.location.href = '/home';
     } catch (error) {
@@ -75,7 +76,7 @@ function LoginPage() {
       </div>
 
       <img src={logo} alt="Logo" className="mb-6 w-24 h-24" />
-      <h1 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">Welcome to FinTeach!</h1>
+      <h1 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">Welcome to FinTeach!</h1>
       <p className="text-sm text-gray-600 dark:text-gray-300 mb-6">
         Please enter your credentials to log in.
       </p>
@@ -99,18 +100,30 @@ function LoginPage() {
           />
         </div>
 
-        <div>
+        <div className="relative">
           <label htmlFor="password" className="block text-left text-gray-700 dark:text-gray-200 mb-1">
             Password:
           </label>
           <input
-            type="password"
+            type={showPassword ? 'text' : 'password'} // Toggle between 'text' and 'password'
             id="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-black dark:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           />
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)} // Toggle visibility
+            className="absolute inset-y-0 right-3 flex items-center"
+            aria-label="Toggle password visibility"
+          >
+            {showPassword ? (
+              <EyeSlashIcon className="mt-7 h-5 w-5 text-gray-500" /> // Eye-off icon for hiding password
+            ) : (
+              <EyeIcon className="mt-7 h-5 w-5 text-gray-500" /> // Eye icon for showing password
+            )}
+          </button>
         </div>
 
         <button
