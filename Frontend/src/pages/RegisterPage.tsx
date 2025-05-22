@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { SunIcon, MoonIcon } from '@heroicons/react/16/solid';
+import axios from 'axios';
 import logo from '../assets/logo.png';
 
 function RegisterPage() {
@@ -9,12 +10,38 @@ function RegisterPage() {
   const [username, setUsername] = useState('');
   const [darkMode, setDarkMode] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Email:', email);
-    console.log('Password:', password);
-    console.log('Confirm Password:', confirmPassword);
-    console.log('Username:', username);
+    try {
+      if (password !== confirmPassword) {
+        alert('Passwords do not match');
+        return;
+      }
+      const response = await axios.post('http://127.0.0.1:8000/accounts/api/register/', {
+        username: username,
+        email: email,
+        password: password,
+      });
+      console.log('Registration successful:', response.data);
+  
+      // Show success alert
+      alert('Account registered successfully! You can now log in.');
+  
+      // Redirect to the login page
+      window.location.href = '/';
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.error('Registration failed:', error.response?.data || error.message);
+        alert(
+          axios.isAxiosError(error) && error.response?.data?.detail
+            ? error.response.data.detail
+            : 'Registration failed. Please try again.'
+        );
+      } else {
+        console.error('An unexpected error occurred:', error);
+        alert('An unexpected error occurred. Please try again.');
+      }
+    }
   };
 
   useEffect(() => {

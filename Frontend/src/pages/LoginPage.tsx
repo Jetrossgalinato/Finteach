@@ -17,11 +17,14 @@ function LoginPage() {
         password: password,
       });
       console.log('Login successful:', response.data);
-
+  
       // Save the access and refresh tokens to localStorage
       localStorage.setItem('accessToken', response.data.access);
       localStorage.setItem('refreshToken', response.data.refresh);
-
+  
+      // Show success alert
+      alert('Login successful! Redirecting to the dashboard.');
+  
       // Redirect to another page (e.g., dashboard)
       window.location.href = '/home';
     } catch (error) {
@@ -34,11 +37,6 @@ function LoginPage() {
         );
       } else {
         console.error('An unexpected error occurred:', error);
-        setErrorMessage('An unexpected error occurred. Please try again.');
-      }
-      if (axios.isAxiosError(error)) {
-        setErrorMessage(error.response?.data?.detail || 'Invalid credentials. Please try again.');
-      } else {
         setErrorMessage('An unexpected error occurred. Please try again.');
       }
     }
