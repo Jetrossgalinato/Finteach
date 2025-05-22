@@ -1,16 +1,47 @@
 import React, { useState, useEffect } from 'react';
 import { SunIcon, MoonIcon } from '@heroicons/react/16/solid'; 
+import axios from 'axios'; // Import Axios and AxiosError
 import logo from '../assets/logo.png';
 
 function LoginPage() {
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState(''); // Change email to username
   const [password, setPassword] = useState('');
   const [darkMode, setDarkMode] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Email:', email);
-    console.log('Password:', password);
+    try {
+      const response = await axios.post('http://127.0.0.1:8000/accounts/api/token/', {
+        username: username, // Use "username" instead of "email"
+        password: password,
+      });
+      console.log('Login successful:', response.data);
+
+      // Save the access and refresh tokens to localStorage
+      localStorage.setItem('accessToken', response.data.access);
+      localStorage.setItem('refreshToken', response.data.refresh);
+
+      // Redirect to another page (e.g., dashboard)
+      window.location.href = '/home';
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.error('Login failed:', error.response?.data || error.message);
+        setErrorMessage(
+          axios.isAxiosError(error) && error.response?.data?.detail
+            ? error.response.data.detail
+            : 'Invalid credentials. Please try again.'
+        );
+      } else {
+        console.error('An unexpected error occurred:', error);
+        setErrorMessage('An unexpected error occurred. Please try again.');
+      }
+      if (axios.isAxiosError(error)) {
+        setErrorMessage(error.response?.data?.detail || 'Invalid credentials. Please try again.');
+      } else {
+        setErrorMessage('An unexpected error occurred. Please try again.');
+      }
+    }
   };
 
   useEffect(() => {
@@ -29,7 +60,6 @@ function LoginPage() {
       localStorage.setItem('theme', 'light');
     }
   }, [darkMode]);
-  
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900 transition-colors px-4">
@@ -52,16 +82,20 @@ function LoginPage() {
         Please enter your credentials to log in.
       </p>
 
+      {errorMessage && (
+        <p className="text-red-500 mb-4">{errorMessage}</p>
+      )}
+
       <form onSubmit={handleSubmit} className="w-full max-w-sm space-y-4">
         <div>
-          <label htmlFor="email" className="block text-left text-gray-700 dark:text-gray-200 mb-1">
-            Email:
+          <label htmlFor="username" className="block text-left text-gray-700 dark:text-gray-200 mb-1">
+            Username:
           </label>
           <input
-            type="email"
-            id="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            type="text"
+            id="username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
             className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-black dark:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           />
