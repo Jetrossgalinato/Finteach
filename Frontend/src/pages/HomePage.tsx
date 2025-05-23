@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import logo from '../assets/logo.png';
-import { Link, useNavigate } from 'react-router-dom'; 
-import { SunIcon, MoonIcon } from '@heroicons/react/16/solid'; 
+import { useNavigate } from 'react-router-dom';
+import { SunIcon, MoonIcon } from '@heroicons/react/16/solid';
+import Sidebar from '../components/Sidebar'; 
 
 function HomePage() {
   const [darkMode, setDarkMode] = useState(false);
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
 
   useEffect(() => {
     const savedMode = localStorage.getItem('theme');
@@ -26,10 +26,10 @@ function HomePage() {
   }, [darkMode]);
 
   const handleLogout = () => {
-    localStorage.removeItem('accessToken'); 
-    localStorage.removeItem('refreshToken'); 
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
     alert('You have been logged out.');
-    navigate('/'); 
+    navigate('/');
   };
 
   return (
@@ -49,45 +49,7 @@ function HomePage() {
       </div>
 
       {/* Sidebar */}
-      <div className="w-64 bg-gray-800 dark:bg-gray-700 text-white flex flex-col">
-        <div className="flex items-center justify-center h-20 border-b border-gray-700">
-          <img src={logo} alt="Logo" className="h-12 w-12" />
-          <h1 className="text-xl font-bold ml-2">FinTeach</h1>
-        </div>
-        <nav className="flex-1 p-4">
-          <ul className="space-y-4">
-            <li>
-              <Link to="/home" className="block px-4 py-2 rounded hover:bg-gray-700">
-                Home
-              </Link>
-            </li>
-            <li>
-              <Link to="/about" className="block px-4 py-2 rounded hover:bg-gray-700">
-                About
-              </Link>
-            </li>
-            <li>
-              <Link to="/dashboard" className="block px-4 py-2 rounded hover:bg-gray-700">
-                Dashboard
-              </Link>
-            </li>
-            <li>
-              <Link to="/settings" className="block px-4 py-2 rounded hover:bg-gray-700">
-                Settings
-              </Link>
-            </li>
-          </ul>
-        </nav>
-        {/* Log Out Button */}
-        <div className="p-4 border-t border-gray-700">
-          <button
-            onClick={handleLogout}
-            className="flex items-center justify-center w-full px-4 py-2 bg-red-600 text-white rounded hover:bg-red-500 transition"
-          >
-            Log Out
-          </button>
-        </div>
-      </div>
+      <Sidebar handleLogout={handleLogout} />
 
       {/* Main Content */}
       <div className="flex-1 p-8">
