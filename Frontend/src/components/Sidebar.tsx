@@ -9,7 +9,7 @@ interface SidebarProps {
 const Sidebar: React.FC<SidebarProps> = ({ handleLogout }) => {
   return (
     <div className="w-64 bg-gray-800 dark:bg-gray-700 text-white flex flex-col">
-      <div className="flex items-center justify-center h-20 border-b border-gray-700">
+      <div className="flex items-center justify-center h-20 border-b border-gray-700 dark:border-gray-600">
         <img src={logo} alt="Logo" className="h-12 w-12" />
         <h1 className="text-xl font-bold ml-2">FinTeach</h1>
       </div>
