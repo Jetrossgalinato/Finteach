@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { SunIcon, MoonIcon, EyeIcon, EyeSlashIcon } from '@heroicons/react/16/solid'; 
+import { SunIcon, MoonIcon, EyeIcon, EyeSlashIcon } from '@heroicons/react/16/solid';
+import { useNavigate } from 'react-router-dom'; 
 import axios from 'axios';
 import logo from '../assets/logo.png';
 
 function LoginPage() {
+  const navigate = useNavigate();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [darkMode, setDarkMode] = useState(false);
@@ -39,6 +41,13 @@ function LoginPage() {
       }
     }
   };
+  // Redirect if already logged in
+  useEffect(() => {
+    const accessToken = localStorage.getItem('accessToken');
+    if (accessToken) {
+      navigate('/home'); // Redirect to home page
+    }
+  }, [navigate]);
 
   useEffect(() => {
     const savedMode = localStorage.getItem('theme');

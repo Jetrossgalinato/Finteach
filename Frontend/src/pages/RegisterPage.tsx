@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { SunIcon, MoonIcon, EyeIcon, EyeSlashIcon } from '@heroicons/react/16/solid';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import logo from '../assets/logo.png';
 
 function RegisterPage() {
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -42,6 +44,14 @@ function RegisterPage() {
       }
     }
   };
+
+  // Redirect if already logged in
+  useEffect(() => {
+    const accessToken = localStorage.getItem('accessToken');
+    if (accessToken) {
+      navigate('/home'); // Redirect to home page
+    }
+  }, [navigate]);
 
   useEffect(() => {
     const savedMode = localStorage.getItem('theme');

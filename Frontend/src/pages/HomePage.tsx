@@ -7,6 +7,14 @@ function HomePage() {
   const [darkMode, setDarkMode] = useState(false);
   const navigate = useNavigate();
 
+  // Auth Guard: Check if the user is authenticated
+  useEffect(() => {
+    const accessToken = localStorage.getItem('accessToken');
+    if (!accessToken) {
+      navigate('/'); // Redirect to login page
+    }
+  }, [navigate]);
+
   useEffect(() => {
     const savedMode = localStorage.getItem('theme');
     if (savedMode === 'dark') {
