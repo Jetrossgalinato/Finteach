@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { SunIcon, MoonIcon } from '@heroicons/react/16/solid';
 import Sidebar from '../components/Sidebar';
@@ -62,7 +62,7 @@ function HomePage() {
       {/* Main Content */}
       <div className="flex-1 p-8 space-y-16">
         {/* Hero Section */}
-        <section className="text-center bg-blue-500 dark:bg-blue-700 text-white py-16 rounded-lg shadow-lg">
+        <section className="mt-9 text-center bg-blue-500 dark:bg-blue-700 text-white py-16 rounded-lg shadow-lg">
           <h1 className="text-4xl font-bold mb-4">Empowering You to Make Smarter Financial Decisions</h1>
           <p className="text-lg mb-6">Learn, plan, and grow with expert-backed financial insights and AI-powered advice.</p>
           <div className="space-x-4">
