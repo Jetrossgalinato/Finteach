@@ -49,7 +49,7 @@ function RegisterPage() {
   useEffect(() => {
     const accessToken = localStorage.getItem('accessToken');
     if (accessToken) {
-      navigate('/home'); // Redirect to home page
+      navigate('/home'); 
     }
   }, [navigate]);
 

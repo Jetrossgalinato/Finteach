@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import logo from '../assets/logo.png';
 
 interface SidebarProps {
-  handleLogout: () => void; // Function to handle logout
+  handleLogout: () => void; 
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ handleLogout }) => {
