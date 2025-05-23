@@ -5,6 +5,7 @@ import Sidebar from '../components/Sidebar';
 
 function HomePage() {
   const [darkMode, setDarkMode] = useState(false);
+  const [userName, setUserName] = useState('');
   const navigate = useNavigate();
 
   // Auth Guard: Check if the user is authenticated
@@ -13,6 +14,42 @@ function HomePage() {
     if (!accessToken) {
       navigate('/'); 
     }
+  }, [navigate]);
+
+  // Fetch the user's name from the Django backend
+  useEffect(() => {
+    const fetchUserName = async () => {
+      const accessToken = localStorage.getItem('accessToken');
+      if (!accessToken) {
+        console.error('No access token found');
+        return;
+      }
+  
+      try {
+        const response = await fetch('http://127.0.0.1:8000/accounts/api/user/', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${accessToken}`,
+          },
+          credentials: 'include', // Include cookies if using session-based auth
+        });
+  
+        if (response.ok) {
+          const data = await response.json();
+          setUserName(data.username); // Set the username from the backend
+        } else if (response.status === 401) {
+          console.error('Unauthorized: Invalid or expired token');
+          navigate('/'); // Redirect to login page
+        } else {
+          console.error('Failed to fetch user details:', response.statusText);
+        }
+      } catch (error) {
+        console.error('Error fetching user details:', error);
+      }
+    };
+  
+    fetchUserName();
   }, [navigate]);
 
   useEffect(() => {
@@ -36,6 +73,7 @@ function HomePage() {
   const handleLogout = () => {
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
+    sessionStorage.removeItem('username');
     alert('You have been logged out.');
     navigate('/');
   };
@@ -63,7 +101,7 @@ function HomePage() {
       <div className="flex-1 p-8 space-y-16">
         {/* Hero Section */}
         <section className="mt-9 text-center bg-blue-500 dark:bg-blue-700 text-white py-16 rounded-lg shadow-lg">
-          <h1 className="text-4xl font-bold mb-4">Empowering You to Make Smarter Financial Decisions</h1>
+        <h1 className="text-4xl font-bold mb-4">Welcome back, {userName}!</h1>
           <p className="text-lg mb-6">Learn, plan, and grow with expert-backed financial insights and AI-powered advice.</p>
           <div className="space-x-4">
             <button className="bg-white dark:bg-gray-800 text-blue-500 dark:text-white px-6 py-2 rounded-md font-bold hover:bg-gray-100 dark:hover:bg-gray-700">

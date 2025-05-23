@@ -56,8 +56,10 @@ MIDDLEWARE = [
 ]
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",  
+    "http://localhost:3000",  # Frontend URL
 ]
+
+CORS_ALLOW_CREDENTIALS = True  # Allow cookies and credentials
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
