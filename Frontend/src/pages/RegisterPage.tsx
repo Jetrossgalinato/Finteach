@@ -25,10 +25,8 @@ function RegisterPage() {
       });
       console.log('Registration successful:', response.data);
   
-      // Show success alert
       alert('Account registered successfully! You can now log in.');
   
-      // Redirect to the login page
       window.location.href = '/';
     } catch (error) {
       if (axios.isAxiosError(error)) {

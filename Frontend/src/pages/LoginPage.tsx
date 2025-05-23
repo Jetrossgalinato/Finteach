@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { SunIcon, MoonIcon, EyeIcon, EyeSlashIcon } from '@heroicons/react/16/solid'; // Import eye icons
+import { SunIcon, MoonIcon, EyeIcon, EyeSlashIcon } from '@heroicons/react/16/solid'; 
 import axios from 'axios';
 import logo from '../assets/logo.png';
 
@@ -19,14 +19,11 @@ function LoginPage() {
       });
       console.log('Login successful:', response.data);
 
-      // Save the access and refresh tokens to localStorage
       localStorage.setItem('accessToken', response.data.access);
       localStorage.setItem('refreshToken', response.data.refresh);
 
-      // Show success alert
       alert('Login successful! Redirecting to the dashboard.');
 
-      // Redirect to another page (e.g., dashboard)
       window.location.href = '/home';
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -105,7 +102,7 @@ function LoginPage() {
             Password:
           </label>
           <input
-            type={showPassword ? 'text' : 'password'} // Toggle between 'text' and 'password'
+            type={showPassword ? 'text' : 'password'} 
             id="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
