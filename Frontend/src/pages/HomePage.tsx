@@ -185,9 +185,9 @@ function HomePage() {
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             {/* Social Media Links */}
             <div className="flex space-x-4">
-              <a href="#" className="hover:text-dark dark:hover:text-white">Facebook</a>
-              <a href="#" className="hover:text-dark dark:hover:text-white">Twitter</a>
-              <a href="#" className="hover:text-dark dark:hover:text-white">LinkedIn</a>
+              <a href="https://www.facebook.com/neri.jetross.axle" className="hover:text-dark dark:hover:text-white">Facebook</a>
+              <a href="https://x.com/JetrossG" className="hover:text-dark dark:hover:text-white">Twitter</a>
+              <a href="https://www.linkedin.com/in/jetross-galinato-141ba5361/" className="hover:text-dark dark:hover:text-white">LinkedIn</a>
             </div>
 
             {/* Legal Links */}
