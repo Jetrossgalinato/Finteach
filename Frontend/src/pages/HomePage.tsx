@@ -2,6 +2,10 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { SunIcon, MoonIcon } from '@heroicons/react/16/solid';
 import Sidebar from '../components/Sidebar';
+import AI from '../assets/AI.jpg';
+import Education from '../assets/educ.jpg';
+import Tools from '../assets/tools.jpg';
+import Advisors from '../assets/advisor.jpg';
 
 function HomePage() {
   const [darkMode, setDarkMode] = useState(false);
@@ -84,7 +88,7 @@ function HomePage() {
       <div className="absolute top-4 right-4">
         <button
           onClick={() => setDarkMode(!darkMode)}
-          className="bg-gray-300 dark:bg-gray-700 text-gray-800 dark:text-white px-3 py-1 rounded transition flex items-center justify-center"
+          className="mt-2 bg-gray-300 dark:bg-gray-700 text-gray-800 dark:text-white px-3 py-1 rounded transition flex items-center justify-center"
         >
           {darkMode ? (
             <SunIcon className="h-5 w-5 text-yellow-400" />
@@ -115,21 +119,41 @@ function HomePage() {
 
         {/* Key Features */}
         <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg flex flex-col items-center">
+            <img
+              src={AI}
+              alt="AI-Powered Financial Advice"
+              className="h-24 w-24 object-cover rounded-full mb-4 shadow"
+            />
             <h3 className="text-xl font-bold mb-2 text-gray-900 dark:text-white">AI-Powered Financial Advice</h3>
-            <p className="text-gray-700 dark:text-gray-300">Get personalized advice from our AI advisor to achieve your financial goals.</p>
+            <p className="text-gray-700 dark:text-gray-300 text-center">Get personalized advice from our AI advisor to achieve your financial goals.</p>
           </div>
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg flex flex-col items-center">
+            <img
+              src={Education}
+              alt="Educational Resources"
+              className="h-24 w-24 object-cover rounded-full mb-4 shadow"
+            />
             <h3 className="text-xl font-bold mb-2 text-gray-900 dark:text-white">Educational Resources</h3>
-            <p className="text-gray-700 dark:text-gray-300">Access videos, blogs, and courses to boost your financial literacy.</p>
+            <p className="text-gray-700 dark:text-gray-300 text-center">Access videos, blogs, and courses to boost your financial literacy.</p>
           </div>
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg flex flex-col items-center">
+            <img
+              src={Tools}
+              alt="Budgeting Tools"
+              className="h-24 w-24 object-cover rounded-full mb-4 shadow"
+            />
             <h3 className="text-xl font-bold mb-2 text-gray-900 dark:text-white">Budgeting Tools</h3>
-            <p className="text-gray-700 dark:text-gray-300">Use our tools to manage your budget and investments.</p>
+            <p className="text-gray-700 dark:text-gray-300 text-center">Use our tools to manage your budget and investments.</p>
           </div>
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg flex flex-col items-center">
+            <img
+              src={Advisors}
+              alt="Certified Advisors"
+              className="h-24 w-24 object-cover rounded-full mb-4 shadow"
+            />
             <h3 className="text-xl font-bold mb-2 text-gray-900 dark:text-white">Certified Advisors</h3>
-            <p className="text-gray-700 dark:text-gray-300">Combine AI insights with certified financial advisors for expert guidance.</p>
+            <p className="text-gray-700 dark:text-gray-300 text-center">Combine AI insights with certified financial advisors for expert guidance.</p>
           </div>
         </section>
 
