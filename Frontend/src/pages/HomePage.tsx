@@ -219,7 +219,7 @@ function HomePage() {
       {showPrivacy && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg max-w-lg w-full p-6">
-            <h2 className="text-2xl font-bold mb-4">Privacy Policy</h2>
+            <h2 className="text-2xl font-bold dark:text-gray-300 mb-4">Privacy Policy</h2>
             <div className="mb-6 text-gray-700 dark:text-gray-300 max-h-80 overflow-y-auto">
               <p>
                 <strong>Effective Date:</strong> May 24, 2025
@@ -248,7 +248,7 @@ function HomePage() {
       {showTerms && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg max-w-lg w-full p-6">
-            <h2 className="text-2xl font-bold mb-4">Terms of Service</h2>
+            <h2 className="text-2xl font-bold dark:text-gray-300 mb-4">Terms of Service</h2>
             <div className="mb-6 text-gray-700 dark:text-gray-300 max-h-80 overflow-y-auto">
               <p>
                 <strong>Effective Date:</strong> May 24, 2025
