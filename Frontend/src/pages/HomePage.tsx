@@ -10,6 +10,8 @@ import Advisors from '../assets/advisor.jpg';
 function HomePage() {
   const [darkMode, setDarkMode] = useState(false);
   const [userName, setUserName] = useState('');
+  const [showPrivacy, setShowPrivacy] = useState(false);
+  const [showTerms, setShowTerms] = useState(false);
   const navigate = useNavigate();
 
   // Auth Guard: Check if the user is authenticated
@@ -192,8 +194,18 @@ function HomePage() {
 
             {/* Legal Links */}
             <div className="flex space-x-4">
-              <a href="#" className="hover:text-dark dark:hover:text-white">Privacy Policy</a>
-              <a href="#" className="hover:text-dark dark:hover:text-white">Terms of Service</a>
+              <button
+                onClick={() => setShowPrivacy(true)}
+                className="hover:text-dark dark:hover:text-white underline"
+              >
+                Privacy Policy
+              </button>
+              <button
+                onClick={() => setShowTerms(true)}
+                className="hover:text-dark dark:hover:text-white underline"
+              >
+                Terms of Service
+              </button>
             </div>
 
             {/* Contact Info */}
@@ -203,6 +215,63 @@ function HomePage() {
           </div>
         </div>
       </footer>
+      {/* Privacy Policy Dialog */}
+      {showPrivacy && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg max-w-lg w-full p-6">
+            <h2 className="text-2xl font-bold mb-4">Privacy Policy</h2>
+            <div className="mb-6 text-gray-700 dark:text-gray-300 max-h-80 overflow-y-auto">
+              <p>
+                <strong>Effective Date:</strong> May 24, 2025
+              </p>
+              <p className="mt-2">
+                We value your privacy. FinTeach collects only the information necessary to provide you with our services, such as your name, email address, and financial preferences. We do not sell or share your personal data with third parties except as required by law or to provide our core services.
+              </p>
+              <p className="mt-2">
+                All data is stored securely and access is restricted to authorized personnel only. You may request to view, update, or delete your data at any time by contacting us at <a href="mailto:support@finteach.com" className="underline">support@finteach.com</a>.
+              </p>
+              <p className="mt-2">
+                By using FinTeach, you consent to this privacy policy.
+              </p>
+            </div>
+            <button
+              onClick={() => setShowPrivacy(false)}
+              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Terms of Service Dialog */}
+      {showTerms && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg max-w-lg w-full p-6">
+            <h2 className="text-2xl font-bold mb-4">Terms of Service</h2>
+            <div className="mb-6 text-gray-700 dark:text-gray-300 max-h-80 overflow-y-auto">
+              <p>
+                <strong>Effective Date:</strong> May 24, 2025
+              </p>
+              <p className="mt-2">
+                By accessing or using FinTeach, you agree to abide by these terms. You must be at least 18 years old to use our services. You are responsible for maintaining the confidentiality of your account information.
+              </p>
+              <p className="mt-2">
+                FinTeach provides educational content and tools for informational purposes only. We do not provide financial, legal, or tax advice. Always consult a qualified professional before making financial decisions.
+              </p>
+              <p className="mt-2">
+                We reserve the right to update these terms at any time. Continued use of the service constitutes acceptance of the new terms.
+              </p>
+            </div>
+            <button
+              onClick={() => setShowTerms(false)}
+              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
       </div>
     </div>
   );
