@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { SunIcon, MoonIcon } from '@heroicons/react/16/solid';
+import { PaperAirplaneIcon } from '@heroicons/react/24/solid';
 import Sidebar from '../components/Sidebar';
 import AI from '../assets/AI.jpg';
 import Education from '../assets/educ.jpg';
@@ -19,6 +20,10 @@ function HomePage() {
     { sender: 'ai', text: 'Hello! I am your Financial Advisor AI. How can I help you today?' }
   ]);
   const [isLoading, setIsLoading] = useState(false);
+  const [chatBoxWidth, setChatBoxWidth] = useState(384); // default 24rem (Tailwind w-96)
+  const [chatBoxHeight, setChatBoxHeight] = useState(384); // default 24rem (Tailwind h-96)
+  const [isResizing, setIsResizing] = useState(false);
+  const chatBoxRef = useRef<HTMLDivElement>(null);
 
   // Auth Guard: Check if the user is authenticated
   useEffect(() => {
@@ -81,6 +86,35 @@ function HomePage() {
       localStorage.setItem('theme', 'light');
     }
   }, [darkMode]);
+
+  const startResizing = (e: React.MouseEvent) => {
+  e.preventDefault();
+  setIsResizing(true);
+};
+
+useEffect(() => {
+  const handleMouseMove = (e: MouseEvent) => {
+    if (!isResizing) return;
+    // Calculate new width and height based on mouse position
+    if (chatBoxRef.current) {
+      const rect = chatBoxRef.current.getBoundingClientRect();
+      const newWidth = Math.max(320, e.clientX - rect.left); // min width 320px
+      const newHeight = Math.max(320, rect.bottom - e.clientY); // min height 320px
+      setChatBoxWidth(newWidth);
+      setChatBoxHeight(newHeight);
+    }
+  };
+  const handleMouseUp = () => setIsResizing(false);
+
+  if (isResizing) {
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
+  }
+  return () => {
+    window.removeEventListener('mousemove', handleMouseMove);
+    window.removeEventListener('mouseup', handleMouseUp);
+  };
+}, [isResizing]);
 
   const handleLogout = () => {
     localStorage.removeItem('accessToken');
@@ -283,7 +317,27 @@ function HomePage() {
       )}
       {/* AI Chatbox */}
       {showChat && (
-        <div className="fixed bottom-0 right-0 z-50 w-full sm:w-96 max-w-full sm:max-w-md h-96 bg-white dark:bg-gray-800 border-l border-t border-gray-300 dark:border-gray-700 rounded-tl-lg shadow-lg flex flex-col">
+        <div
+          ref={chatBoxRef}
+          className="fixed bottom-0 right-0 z-50 bg-white dark:bg-gray-800 border-l border-t border-gray-300 dark:border-gray-700 rounded-tl-lg shadow-lg flex flex-col"
+          style={{
+            width: `${chatBoxWidth}px`,
+            height: `${chatBoxHeight}px`,
+            minWidth: '320px',
+            minHeight: '320px',
+            maxWidth: '100vw',
+            maxHeight: '100vh',
+            transition: isResizing ? 'none' : 'width 0.1s, height 0.1s'
+          }}
+        >
+          {/* Draggable/Resizable Handle */}
+          <div
+            onMouseDown={startResizing}
+            className="absolute top-0 left-0 z-50 cursor-nwse-resize bg-blue-500 rounded-tl-lg"
+            style={{ width: 20, height: 20 }}
+            title="Drag to resize"
+          ></div>
+          {/* Chatbox header and rest of your chatbox code... */}
           <div className="flex justify-between items-center p-4 border-b border-gray-200 dark:border-gray-700">
             <span className="font-bold text-gray-800 dark:text-gray-200">AI Financial Advisor</span>
             <button
@@ -357,10 +411,10 @@ function HomePage() {
             />
             <button
               type="submit"
-              className="bg-blue-500 dark:bg-blue-700 text-white px-4 py-2 rounded-r font-bold hover:bg-blue-600 dark:hover:bg-blue-800"
+              className="bg-blue-500 dark:bg-blue-700 text-white px-4 py-2 rounded-r font-bold hover:bg-blue-600 dark:hover:bg-blue-800 flex items-center justify-center"
               disabled={isLoading}
             >
-              Send
+              <PaperAirplaneIcon className="h-5 w-5" />
             </button>
           </form>
         </div>
