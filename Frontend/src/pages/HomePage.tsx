@@ -329,16 +329,19 @@ function HomePage() {
 
               // Call your AI backend here
               try {
-                const response = await fetch('YOUR_AI_API_ENDPOINT', {
+                const accessToken = localStorage.getItem('accessToken');
+                const response = await fetch('http://127.0.0.1:8000/accounts/api/ai-chat/', {
                   method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
+                  headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${accessToken}`,
+                  },
                   body: JSON.stringify({ message: userMessage }),
                 });
                 const data = await response.json();
-                // Only allow financial-related responses
                 const aiReply = data.reply || "I'm here to help with financial topics. Please ask a finance-related question!";
                 setChatMessages((msgs) => [...msgs, { sender: 'ai', text: aiReply }]);
-              } catch (err) {
+              } catch {
                 setChatMessages((msgs) => [...msgs, { sender: 'ai', text: "Sorry, I couldn't process your request. Please try again." }]);
               }
               setIsLoading(false);
