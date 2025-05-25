@@ -24,7 +24,7 @@ function LoginPage() {
       localStorage.setItem('accessToken', response.data.access);
       localStorage.setItem('refreshToken', response.data.refresh);
 
-      alert('Login successful! Redirecting to the dashboard.');
+      alert('Login successful! Redirecting to the Homepage.');
 
       window.location.href = '/home';
     } catch (error) {

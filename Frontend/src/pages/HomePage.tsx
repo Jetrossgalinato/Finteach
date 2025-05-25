@@ -20,8 +20,8 @@ function HomePage() {
     { sender: 'ai', text: 'Hello! I am your Financial Advisor AI. How can I help you today?' }
   ]);
   const [isLoading, setIsLoading] = useState(false);
-  const [chatBoxWidth, setChatBoxWidth] = useState(384); // default 24rem (Tailwind w-96)
-  const [chatBoxHeight, setChatBoxHeight] = useState(384); // default 24rem (Tailwind h-96)
+  const [chatBoxWidth, setChatBoxWidth] = useState(384); 
+  const [chatBoxHeight, setChatBoxHeight] = useState(384); 
   const [isResizing, setIsResizing] = useState(false);
   const chatBoxRef = useRef<HTMLDivElement>(null);
 
@@ -98,8 +98,8 @@ useEffect(() => {
     // Calculate new width and height based on mouse position
     if (chatBoxRef.current) {
       const rect = chatBoxRef.current.getBoundingClientRect();
-      const newWidth = Math.max(320, e.clientX - rect.left); // min width 320px
-      const newHeight = Math.max(320, rect.bottom - e.clientY); // min height 320px
+      const newWidth = Math.max(320, e.clientX - rect.left); 
+      const newHeight = Math.max(320, rect.bottom - e.clientY); 
       setChatBoxWidth(newWidth);
       setChatBoxHeight(newHeight);
     }
@@ -150,7 +150,9 @@ useEffect(() => {
         <h1 className="text-4xl font-bold mb-4">Welcome back, {userName}!</h1>
           <p className="text-lg mb-6">Learn, plan, and grow with expert-backed financial insights and AI-powered advice.</p>
           <div className="space-x-4">
-            <button className="bg-white dark:bg-gray-800 text-blue-500 dark:text-white px-6 py-2 rounded-md font-bold hover:bg-gray-100 dark:hover:bg-gray-700">
+            <button className="bg-white dark:bg-gray-800 text-blue-500 dark:text-white px-6 py-2 rounded-md font-bold hover:bg-gray-100 dark:hover:bg-gray-700"
+            onClick={() => navigate('/dashboard')}
+            >
               Get Started
             </button>
             <button
