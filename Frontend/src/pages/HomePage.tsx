@@ -13,6 +13,12 @@ function HomePage() {
   const [showPrivacy, setShowPrivacy] = useState(false);
   const [showTerms, setShowTerms] = useState(false);
   const navigate = useNavigate();
+  const [showChat, setShowChat] = useState(false);
+  const [chatInput, setChatInput] = useState('');
+  const [chatMessages, setChatMessages] = useState([
+    { sender: 'ai', text: 'Hello! I am your Financial Advisor AI. How can I help you today?' }
+  ]);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Auth Guard: Check if the user is authenticated
   useEffect(() => {
@@ -113,7 +119,10 @@ function HomePage() {
             <button className="bg-white dark:bg-gray-800 text-blue-500 dark:text-white px-6 py-2 rounded-md font-bold hover:bg-gray-100 dark:hover:bg-gray-700">
               Get Started
             </button>
-            <button className="bg-blue-600 dark:bg-blue-800 px-6 py-2 rounded-md font-bold hover:bg-blue-700 dark:hover:bg-blue-900">
+            <button
+              className="bg-blue-600 dark:bg-blue-800 px-6 py-2 rounded-md font-bold hover:bg-blue-700 dark:hover:bg-blue-900"
+              onClick={() => setShowChat(true)}
+            >
               Talk to Our AI Advisor
             </button>
           </div>
@@ -270,6 +279,87 @@ function HomePage() {
               Close
             </button>
           </div>
+        </div>
+      )}
+      {/* AI Chatbox */}
+      {showChat && (
+        <div className="fixed bottom-0 right-0 z-50 w-full sm:w-96 max-w-full sm:max-w-md h-96 bg-white dark:bg-gray-800 border-l border-t border-gray-300 dark:border-gray-700 rounded-tl-lg shadow-lg flex flex-col">
+          <div className="flex justify-between items-center p-4 border-b border-gray-200 dark:border-gray-700">
+            <span className="font-bold text-gray-800 dark:text-gray-200">AI Financial Advisor</span>
+            <button
+              onClick={() => setShowChat(false)}
+              className="text-gray-500 hover:text-red-500 text-xl font-bold"
+              aria-label="Close chat"
+            >
+              ×
+            </button>
+          </div>
+          <div className="flex-1 overflow-y-auto p-4 space-y-2">
+            {chatMessages.map((msg, idx) => (
+              <div
+                key={idx}
+                className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
+              >
+                <div className={`px-3 py-2 rounded-lg text-sm max-w-xs
+                  ${msg.sender === 'user'
+                    ? 'bg-blue-500 text-white'
+                    : 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100'
+                  }`}>
+                  {msg.text}
+                </div>
+              </div>
+            ))}
+            {isLoading && (
+              <div className="flex justify-start">
+                <div className="px-3 py-2 rounded-lg text-sm bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100 animate-pulse">
+                  AI is typing...
+                </div>
+              </div>
+            )}
+          </div>
+          <form
+            className="flex p-4 border-t border-gray-200 dark:border-gray-700"
+            onSubmit={async (e) => {
+              e.preventDefault();
+              if (!chatInput.trim()) return;
+              const userMessage = chatInput;
+              setChatMessages((msgs) => [...msgs, { sender: 'user', text: userMessage }]);
+              setChatInput('');
+              setIsLoading(true);
+
+              // Call your AI backend here
+              try {
+                const response = await fetch('YOUR_AI_API_ENDPOINT', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ message: userMessage }),
+                });
+                const data = await response.json();
+                // Only allow financial-related responses
+                const aiReply = data.reply || "I'm here to help with financial topics. Please ask a finance-related question!";
+                setChatMessages((msgs) => [...msgs, { sender: 'ai', text: aiReply }]);
+              } catch (err) {
+                setChatMessages((msgs) => [...msgs, { sender: 'ai', text: "Sorry, I couldn't process your request. Please try again." }]);
+              }
+              setIsLoading(false);
+            }}
+          >
+            <input
+              type="text"
+              className="flex-1 px-3 py-2 rounded-l border border-gray-300 dark:border-gray-600 focus:outline-none"
+              placeholder="Ask a financial question..."
+              value={chatInput}
+              onChange={(e) => setChatInput(e.target.value)}
+              disabled={isLoading}
+            />
+            <button
+              type="submit"
+              className="bg-blue-500 dark:bg-blue-700 text-white px-4 py-2 rounded-r font-bold hover:bg-blue-600 dark:hover:bg-blue-800"
+              disabled={isLoading}
+            >
+              Send
+            </button>
+          </form>
         </div>
       )}
       </div>
