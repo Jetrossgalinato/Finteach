@@ -18,6 +18,10 @@ function DashBoard() {
   const [chatBoxHeight, setChatBoxHeight] = useState(384); 
   const [isResizing, setIsResizing] = useState(false);
   const chatBoxRef = useRef<HTMLDivElement>(null);
+  const [checkingBalance, setCheckingBalance] = useState(2500.00);
+  const [expenseAmount, setExpenseAmount] = useState('');
+  const [expenseNote, setExpenseNote] = useState('');
+
 
     // Auth Guard: Check if the user is authenticated
   useEffect(() => {
@@ -155,7 +159,7 @@ useEffect(() => {
                 <section className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
                   <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 flex flex-col items-center">
                     <span className="text-gray-500 dark:text-gray-300 text-sm mb-2">Checking Balance</span>
-                    <span className="text-2xl font-bold text-blue-600 dark:text-blue-400">$2,500.00</span>
+                    <span className="text-2xl font-bold text-blue-600 dark:text-blue-400">${checkingBalance.toFixed(2)}</span>
                   </div>
                   <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 flex flex-col items-center">
                     <span className="text-gray-500 dark:text-gray-300 text-sm mb-2">Savings Balance</span>
@@ -165,6 +169,45 @@ useEffect(() => {
                     <span className="text-gray-500 dark:text-gray-300 text-sm mb-2">Investments</span>
                     <span className="text-2xl font-bold text-purple-600 dark:text-purple-400">$15,000.00</span>
                   </div>
+                </section>
+                {/* Expense Entry Form */}
+                <section className="max-w-md mx-auto mt-8 bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+                  <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">Enter Today's Expense</h2>
+                  <form
+                    onSubmit={e => {
+                      e.preventDefault();
+                      const amount = parseFloat(expenseAmount);
+                      if (isNaN(amount) || amount <= 0) return;
+                      setCheckingBalance(prev => Math.max(0, prev - amount));
+                      setExpenseAmount('');
+                      setExpenseNote('');
+                    }}
+                    className="flex flex-col gap-4"
+                  >
+                    <input
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      value={expenseAmount}
+                      onChange={e => setExpenseAmount(e.target.value)}
+                      placeholder="Amount (e.g. 25.50)"
+                      className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded focus:outline-none"
+                      required
+                    />
+                    <input
+                      type="text"
+                      value={expenseNote}
+                      onChange={e => setExpenseNote(e.target.value)}
+                      placeholder="Note (optional)"
+                      className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded focus:outline-none"
+                    />
+                    <button
+                      type="submit"
+                      className="bg-blue-500 dark:bg-blue-700 text-white px-4 py-2 rounded font-bold hover:bg-blue-600 dark:hover:bg-blue-800"
+                    >
+                      Add Expense
+                    </button>
+                  </form>
                 </section>
             </div>
             
