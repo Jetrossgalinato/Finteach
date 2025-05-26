@@ -151,7 +151,23 @@ useEffect(() => {
                     </button>
                 </div>
                 </section>
+                {/* Account Overview */}
+                <section className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+                  <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 flex flex-col items-center">
+                    <span className="text-gray-500 dark:text-gray-300 text-sm mb-2">Checking Balance</span>
+                    <span className="text-2xl font-bold text-blue-600 dark:text-blue-400">$2,500.00</span>
+                  </div>
+                  <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 flex flex-col items-center">
+                    <span className="text-gray-500 dark:text-gray-300 text-sm mb-2">Savings Balance</span>
+                    <span className="text-2xl font-bold text-green-600 dark:text-green-400">$8,200.00</span>
+                  </div>
+                  <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 flex flex-col items-center">
+                    <span className="text-gray-500 dark:text-gray-300 text-sm mb-2">Investments</span>
+                    <span className="text-2xl font-bold text-purple-600 dark:text-purple-400">$15,000.00</span>
+                  </div>
+                </section>
             </div>
+            
             {/* AI Chatbox */}
             {showChat && (
                 <div
