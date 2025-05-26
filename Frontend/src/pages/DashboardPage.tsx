@@ -140,8 +140,8 @@ useEffect(() => {
             <div className="flex-1 p-8 space-y-16">
                 {/* Hero Section */}
                 <section className="mt-9 text-center bg-blue-500 dark:bg-blue-700 text-white py-16 rounded-lg shadow-lg">
-                <h1 className="text-4xl font-bold mb-4">Welcome back, {userName}!</h1>
-                <p className="text-lg mb-6">Your personalized financial dashboard is ready.</p>
+                <h1 className="text-4xl font-bold mb-4">Dashboard</h1>
+                <p className="text-lg mb-6">Hi! {userName}, this is your personalized financial dashboard is ready.</p>
                 <div className="space-x-4">
                     <button
                     className="bg-white dark:bg-gray-800 text-blue-500 dark:text-white px-6 py-2 rounded-md font-bold hover:bg-gray-100 dark:hover:bg-gray-700"
