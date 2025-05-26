@@ -21,9 +21,18 @@ function DashBoard() {
 
   const [expenseAmount, setExpenseAmount] = useState('');
   const [expenseNote, setExpenseNote] = useState('');
-  const [checkingBalance, setCheckingBalance] = useState(2500.00);
-  const [savingsBalance, setSavingsBalance] = useState(8200.00);
-  const [investmentBalance, setInvestmentBalance] = useState(15000.00);
+const [checkingBalance, setCheckingBalance] = useState(() => {
+  const saved = localStorage.getItem('checkingBalance');
+  return saved !== null ? parseFloat(saved) : 0.00;
+});
+const [savingsBalance, setSavingsBalance] = useState(() => {
+  const saved = localStorage.getItem('savingsBalance');
+  return saved !== null ? parseFloat(saved) : 0.00;
+});
+const [investmentBalance, setInvestmentBalance] = useState(() => {
+  const saved = localStorage.getItem('investmentBalance');
+  return saved !== null ? parseFloat(saved) : 0.00;
+});
 
   const [depositAmount, setDepositAmount] = useState('');
   const [depositAccount, setDepositAccount] = useState('checking');
@@ -97,6 +106,27 @@ function DashBoard() {
 };
 
 useEffect(() => {
+  const savedChecking = localStorage.getItem('checkingBalance');
+  const savedSavings = localStorage.getItem('savingsBalance');
+  const savedInvestments = localStorage.getItem('investmentBalance');
+  setCheckingBalance(savedChecking !== null ? parseFloat(savedChecking) : 0.00);     
+  setSavingsBalance(savedSavings !== null ? parseFloat(savedSavings) : 0.00);         
+  setInvestmentBalance(savedInvestments !== null ? parseFloat(savedInvestments) : 0.00); 
+}, []);
+
+useEffect(() => {
+  localStorage.setItem('checkingBalance', checkingBalance.toString());
+}, [checkingBalance]);
+
+useEffect(() => {
+  localStorage.setItem('savingsBalance', savingsBalance.toString());
+}, [savingsBalance]);
+
+useEffect(() => {
+  localStorage.setItem('investmentBalance', investmentBalance.toString());
+}, [investmentBalance]);
+
+useEffect(() => {
   const handleMouseMove = (e: MouseEvent) => {
     if (!isResizing) return;
     // Calculate new width and height based on mouse position
@@ -165,15 +195,15 @@ useEffect(() => {
                 <section className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
                   <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 flex flex-col items-center">
                     <span className="text-gray-500 dark:text-gray-300 text-sm mb-2">Checking Balance</span>
-                    <span className="text-2xl font-bold text-blue-600 dark:text-blue-400">${checkingBalance.toFixed(2)}</span>
+                    <span className="text-2xl font-bold text-blue-600 dark:text-blue-400">₱{checkingBalance.toFixed(2)}</span>
                   </div>
                   <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 flex flex-col items-center">
                     <span className="text-gray-500 dark:text-gray-300 text-sm mb-2">Savings Balance</span>
-                    <span className="text-2xl font-bold text-green-600 dark:text-green-400">${savingsBalance.toFixed(2)}</span>
+                    <span className="text-2xl font-bold text-green-600 dark:text-green-400">₱{savingsBalance.toFixed(2)}</span>
                   </div>
                   <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 flex flex-col items-center">
                     <span className="text-gray-500 dark:text-gray-300 text-sm mb-2">Investments</span>
-                    <span className="text-2xl font-bold text-purple-600 dark:text-purple-400">${investmentBalance.toFixed(2)}</span>
+                    <span className="text-2xl font-bold text-purple-600 dark:text-purple-400">₱{investmentBalance.toFixed(2)}</span>
                   </div>
                 </section>
                 {/* Expense Entry Form */}
