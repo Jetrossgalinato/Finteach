@@ -18,9 +18,15 @@ function DashBoard() {
   const [chatBoxHeight, setChatBoxHeight] = useState(384); 
   const [isResizing, setIsResizing] = useState(false);
   const chatBoxRef = useRef<HTMLDivElement>(null);
-  const [checkingBalance, setCheckingBalance] = useState(2500.00);
+
   const [expenseAmount, setExpenseAmount] = useState('');
   const [expenseNote, setExpenseNote] = useState('');
+  const [checkingBalance, setCheckingBalance] = useState(2500.00);
+  const [savingsBalance, setSavingsBalance] = useState(8200.00);
+  const [investmentBalance, setInvestmentBalance] = useState(15000.00);
+
+  const [depositAmount, setDepositAmount] = useState('');
+  const [depositAccount, setDepositAccount] = useState('checking');
 
 
     // Auth Guard: Check if the user is authenticated
@@ -163,11 +169,11 @@ useEffect(() => {
                   </div>
                   <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 flex flex-col items-center">
                     <span className="text-gray-500 dark:text-gray-300 text-sm mb-2">Savings Balance</span>
-                    <span className="text-2xl font-bold text-green-600 dark:text-green-400">$8,200.00</span>
+                    <span className="text-2xl font-bold text-green-600 dark:text-green-400">${savingsBalance.toFixed(2)}</span>
                   </div>
                   <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 flex flex-col items-center">
                     <span className="text-gray-500 dark:text-gray-300 text-sm mb-2">Investments</span>
-                    <span className="text-2xl font-bold text-purple-600 dark:text-purple-400">$15,000.00</span>
+                    <span className="text-2xl font-bold text-purple-600 dark:text-purple-400">${investmentBalance.toFixed(2)}</span>
                   </div>
                 </section>
                 {/* Expense Entry Form */}
@@ -206,6 +212,47 @@ useEffect(() => {
                       className="bg-blue-500 dark:bg-blue-700 text-white px-4 py-2 rounded font-bold hover:bg-blue-600 dark:hover:bg-blue-800"
                     >
                       Add Expense
+                    </button>
+                  </form>
+                </section>
+                <section className="max-w-md mx-auto mt-8 bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+                  <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">Deposit Funds</h2>
+                  <form
+                    onSubmit={e => {
+                      e.preventDefault();
+                      const amount = parseFloat(depositAmount);
+                      if (isNaN(amount) || amount <= 0) return;
+                      if (depositAccount === 'checking') setCheckingBalance(prev => prev + amount);
+                      if (depositAccount === 'savings') setSavingsBalance(prev => prev + amount);
+                      if (depositAccount === 'investments') setInvestmentBalance(prev => prev + amount);
+                      setDepositAmount('');
+                    }}
+                    className="flex flex-col gap-4"
+                  >
+                    <select
+                      value={depositAccount}
+                      onChange={e => setDepositAccount(e.target.value)}
+                      className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded focus:outline-none"
+                    >
+                      <option value="checking">Current</option>
+                      <option value="savings">Savings</option>
+                      <option value="investments">Investments</option>
+                    </select>
+                    <input
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      value={depositAmount}
+                      onChange={e => setDepositAmount(e.target.value)}
+                      placeholder="Amount (e.g. 100.00)"
+                      className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded focus:outline-none"
+                      required
+                    />
+                    <button
+                      type="submit"
+                      className="bg-green-500 dark:bg-green-700 text-white px-4 py-2 rounded font-bold hover:bg-green-600 dark:hover:bg-green-800"
+                    >
+                      Add Funds
                     </button>
                   </form>
                 </section>
