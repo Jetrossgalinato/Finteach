@@ -75,6 +75,8 @@ type Goal = {
   target: number;
 };
 
+const [selectedGoalIdx, setSelectedGoalIdx] = useState<number | null>(null);
+
 const [goals, setGoals] = useState<Goal[]>(() => {
   const saved = localStorage.getItem('goals');
   return saved ? JSON.parse(saved) : [];
@@ -327,18 +329,37 @@ useEffect(() => {
                         e.preventDefault();
                         const amount = parseFloat(depositAmount);
                         if (isNaN(amount) || amount <= 0) return;
+
                         if (depositAccount === 'checking') setCheckingBalance(prev => prev + amount);
-                        if (depositAccount === 'savings') setSavingsBalance(prev => prev + amount);
+                        if (depositAccount === 'savings') {
+                          setSavingsBalance(prev => prev + amount);
+
+                          // If a goal is selected, add to that goal's current value
+                          if (selectedGoalIdx !== null && goals[selectedGoalIdx]) {
+                            setGoals(prevGoals => {
+                              const updatedGoals = [...prevGoals];
+                              updatedGoals[selectedGoalIdx] = {
+                                ...updatedGoals[selectedGoalIdx],
+                                current: updatedGoals[selectedGoalIdx].current + amount,
+                              };
+                              return updatedGoals;
+                            });
+                          }
+                        }
                         if (depositAccount === 'investments') setInvestmentBalance(prev => prev + amount);
+
                         setRecentActivity((prev: ActivityItem[]) => [
                           {
                             type: 'deposit',
-                            detail: `Deposited ₱${amount.toFixed(2)} to ${depositAccount.charAt(0).toUpperCase() + depositAccount.slice(1)}`,
+                            detail: `Deposited ₱${amount.toFixed(2)} to ${depositAccount.charAt(0).toUpperCase() + depositAccount.slice(1)}`
+                              + (depositAccount === 'savings' && selectedGoalIdx !== null && goals[selectedGoalIdx]
+                                  ? ` (Goal: ${goals[selectedGoalIdx].name})` : ''),
                             date: new Date().toLocaleString()
                           },
-                          ...prev.slice(0, 4) 
+                          ...prev.slice(0, 4)
                         ]);
                         setDepositAmount('');
+                        setSelectedGoalIdx(null);
                       }}
                       className="flex flex-col gap-4"
                     >
@@ -351,6 +372,21 @@ useEffect(() => {
                         <option value="savings">Savings</option>
                         <option value="investments">Investments</option>
                       </select>
+
+                      {/* Show goal selector if savings is selected and there are goals */}
+                      {depositAccount === 'savings' && goals.length > 0 && (
+                        <select
+                          value={selectedGoalIdx !== null ? selectedGoalIdx : ''}
+                          onChange={e => setSelectedGoalIdx(e.target.value === '' ? null : Number(e.target.value))}
+                          className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded focus:outline-none"
+                        >
+                          <option value="">Select Financial Goal (optional)</option>
+                          {goals.map((goal, idx) => (
+                            <option key={idx} value={idx}>{goal.name}</option>
+                          ))}
+                        </select>
+                      )}
+
                       <input
                         type="number"
                         min="0"
