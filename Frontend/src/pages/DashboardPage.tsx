@@ -48,19 +48,26 @@ const [recentActivity, setRecentActivity] = useState<ActivityItem[]>(() => {
   return saved ? JSON.parse(saved) : [];
 });
 
+const now = new Date();
+const currentMonth = now.getMonth();
+const currentYear = now.getFullYear();
+
+const monthlySpending = recentActivity
+  .filter(item => {
+    if (item.type !== 'expense') return false;
+    const date = new Date(item.date);
+    return date.getMonth() === currentMonth && date.getFullYear() === currentYear;
+  })
+  .reduce((sum, item) => {
+    const match = item.detail.match(/₱([\d,.]+)/);
+    return sum + (match ? parseFloat(match[1].replace(/,/g, '')) : 0);
+  }, 0);
+
 const [monthlyBudget, setMonthlyBudget] = useState(() => {
   const saved = localStorage.getItem('monthlyBudget');
   return saved ? parseFloat(saved) : 0;
 });
 const [isEditingBudget, setIsEditingBudget] = useState(monthlyBudget === 0);
-
-const monthlySpending = recentActivity
-  .filter(item => item.type === 'expense')
-  .reduce((sum, item) => {
-    // Extract amount from detail string, e.g. "Spent ₱25.50 from Checking"
-    const match = item.detail.match(/₱([\d,.]+)/);
-    return sum + (match ? parseFloat(match[1].replace(/,/g, '')) : 0);
-  }, 0);
 
     // Auth Guard: Check if the user is authenticated
   useEffect(() => {
@@ -362,6 +369,9 @@ useEffect(() => {
                 {/* Budget Summary */}
                 <section className="max-w-3xl mx-auto mt-8 bg-white dark:bg-gray-800 rounded-lg shadow p-6">
                   <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">Budget Summary</h2>
+                  <div className="mb-2 text-gray-600 dark:text-gray-300 text-sm">
+                    {now.toLocaleString('default', { month: 'long', year: 'numeric' })}
+                  </div>
                   {isEditingBudget ? (
                     <form
                       className="flex flex-col md:flex-row gap-4 mb-4"
