@@ -4,6 +4,12 @@ import { SunIcon, MoonIcon } from '@heroicons/react/16/solid';
 import { PaperAirplaneIcon } from '@heroicons/react/24/solid';
 import Sidebar from '../components/Sidebar';
 
+type ActivityItem = {
+  type: string;
+  detail: string;
+  date: string;
+};
+
 function DashBoard() {
   const [darkMode, setDarkMode] = useState(false);
   const [userName, setUserName] = useState('');
@@ -37,6 +43,10 @@ const [investmentBalance, setInvestmentBalance] = useState(() => {
   const [depositAmount, setDepositAmount] = useState('');
   const [depositAccount, setDepositAccount] = useState('checking');
 
+const [recentActivity, setRecentActivity] = useState<ActivityItem[]>(() => {
+  const saved = localStorage.getItem('recentActivity');
+  return saved ? JSON.parse(saved) : [];
+});
 
     // Auth Guard: Check if the user is authenticated
   useEffect(() => {
@@ -127,6 +137,10 @@ useEffect(() => {
 }, [investmentBalance]);
 
 useEffect(() => {
+  localStorage.setItem('recentActivity', JSON.stringify(recentActivity));
+}, [recentActivity]);
+
+useEffect(() => {
   const handleMouseMove = (e: MouseEvent) => {
     if (!isResizing) return;
     // Calculate new width and height based on mouse position
@@ -181,7 +195,7 @@ useEffect(() => {
                 {/* Hero Section */}
                 <section className="mt-9 text-center bg-blue-500 dark:bg-blue-700 text-white py-16 rounded-lg shadow-lg">
                 <h1 className="text-4xl font-bold mb-4">Dashboard</h1>
-                <p className="text-lg mb-6">Hi! {userName}, this is your personalized financial dashboard is ready.</p>
+                <p className="text-lg mb-6">Hi! {userName}, this is your personalized financial dashboard.</p>
                 <div className="space-x-4">
                     <button
                     className="bg-white dark:bg-gray-800 text-blue-500 dark:text-white px-6 py-2 rounded-md font-bold hover:bg-gray-100 dark:hover:bg-gray-700"
@@ -216,6 +230,14 @@ useEffect(() => {
                         const amount = parseFloat(expenseAmount);
                         if (isNaN(amount) || amount <= 0) return;
                         setCheckingBalance(prev => Math.max(0, prev - amount));
+                        setRecentActivity(prev => [
+                          { 
+                            type: 'expense', 
+                            detail: `Spent ₱${amount.toFixed(2)} from Checking${expenseNote ? ` (${expenseNote})` : ''}`, 
+                            date: new Date().toLocaleString() 
+                          },
+                          ...prev.slice(0, 19) // keep only the latest 20
+                        ]);
                         setExpenseAmount('');
                         setExpenseNote('');
                       }}
@@ -258,6 +280,14 @@ useEffect(() => {
                         if (depositAccount === 'checking') setCheckingBalance(prev => prev + amount);
                         if (depositAccount === 'savings') setSavingsBalance(prev => prev + amount);
                         if (depositAccount === 'investments') setInvestmentBalance(prev => prev + amount);
+                        setRecentActivity(prev => [
+                          { 
+                            type: 'deposit', 
+                            detail: `Deposited ₱${amount.toFixed(2)} to ${depositAccount.charAt(0).toUpperCase() + depositAccount.slice(1)}`, 
+                            date: new Date().toLocaleString() 
+                          },
+                          ...prev.slice(0, 19)
+                        ]);
                         setDepositAmount('');
                       }}
                       className="flex flex-col gap-4"
@@ -290,6 +320,71 @@ useEffect(() => {
                     </form>
                   </section>
                 </div>
+                {/* Recent Activity */}
+                <section className="max-w-3xl mx-auto mt-8 bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+                  <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">Recent Activity</h2>
+                  {recentActivity.length === 0 ? (
+                    <div className="text-gray-500 dark:text-gray-400">No recent activity yet.</div>
+                  ) : (
+                    <ul className="space-y-2">
+                      {recentActivity.map((item, idx) => (
+                        <li key={idx} className="flex items-center justify-between">
+                          <span>{item.detail}</span>
+                          <span className="text-xs text-gray-500">{item.date}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                  {/* Example notification */}
+                  <div className="mt-4 p-2 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded">
+                    <span>Tip: Stay on track with your monthly budget!</span>
+                  </div>
+                </section>
+
+                {/* Budget Summary */}
+                <section className="max-w-3xl mx-auto mt-8 bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+                  <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">Budget Summary</h2>
+                  <div className="mb-4">
+                    <span className="block text-gray-700 dark:text-gray-300 mb-2">This Month's Spending</span>
+                    {/* Simple bar chart visual */}
+                    <div className="w-full bg-gray-200 dark:bg-gray-700 rounded h-4 mb-2">
+                      <div className="bg-green-500 h-4 rounded" style={{ width: '60%' }}></div>
+                    </div>
+                    <div className="flex justify-between text-sm text-gray-600 dark:text-gray-400">
+                      <span>₱6,000 spent</span>
+                      <span>₱10,000 budget</span>
+                    </div>
+                  </div>
+                </section>
+
+                {/* Financial Goals */}
+                <section className="max-w-3xl mx-auto mt-8 bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+                  <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">Financial Goals</h2>
+                  <div className="mb-4">
+                    <span className="block text-gray-700 dark:text-gray-300 mb-1">Emergency Fund</span>
+                    <div className="w-full bg-gray-200 dark:bg-gray-700 rounded h-4 mb-1">
+                      <div className="bg-blue-500 h-4 rounded" style={{ width: '40%' }}></div>
+                    </div>
+                    <div className="flex justify-between text-sm text-gray-600 dark:text-gray-400">
+                      <span>₱20,000 / ₱50,000</span>
+                      <button className="text-xs text-blue-600 dark:text-blue-300 underline ml-2">Edit</button>
+                    </div>
+                  </div>
+                  <div>
+                    <span className="block text-gray-700 dark:text-gray-300 mb-1">Save for a Car</span>
+                    <div className="w-full bg-gray-200 dark:bg-gray-700 rounded h-4 mb-1">
+                      <div className="bg-purple-500 h-4 rounded" style={{ width: '70%' }}></div>
+                    </div>
+                    <div className="flex justify-between text-sm text-gray-600 dark:text-gray-400">
+                      <span>₱140,000 / ₱200,000</span>
+                      <button className="text-xs text-blue-600 dark:text-blue-300 underline ml-2">Edit</button>
+                    </div>
+                  </div>
+                  {/* Option to add a new goal */}
+                  <button className="mt-4 bg-green-500 dark:bg-green-700 text-white px-4 py-2 rounded font-bold hover:bg-green-600 dark:hover:bg-green-800">
+                    Add Goal
+                  </button>
+                </section>
             </div>
             
             {/* AI Chatbox */}
