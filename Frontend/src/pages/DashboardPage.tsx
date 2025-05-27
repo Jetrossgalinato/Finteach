@@ -86,7 +86,6 @@ const [goalName, setGoalName] = useState('');
 const [goalTarget, setGoalTarget] = useState('');
 const [goalCurrent, setGoalCurrent] = useState('');
 
-// Add these states:
 const [editingGoalIdx, setEditingGoalIdx] = useState<number | null>(null);
 const [editGoalName, setEditGoalName] = useState('');
 const [editGoalTarget, setEditGoalTarget] = useState('');
