@@ -57,7 +57,7 @@ function AboutPage() {
         <Sidebar handleLogout={handleLogout} />
       {/* Main Content */}
       <div className="flex-1 p-8 space-y-16">
-        <h1 className="text-3xl dark:text-gray-200 font-bold mb-4">About FinTeach</h1>
+        <h1 className="text-3xl dark:text-gray-200 font-bold mb-4 mt-6">About FinTeach</h1>
         <p className="mb-4 dark:text-gray-300">
           <strong>FinTeach</strong> is a personal finance dashboard designed to help you manage your money, track expenses, set financial goals, and improve your financial literacy.
         </p>
