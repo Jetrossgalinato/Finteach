@@ -230,13 +230,13 @@ useEffect(() => {
                         const amount = parseFloat(expenseAmount);
                         if (isNaN(amount) || amount <= 0) return;
                         setCheckingBalance(prev => Math.max(0, prev - amount));
-                        setRecentActivity(prev => [
-                          { 
-                            type: 'expense', 
-                            detail: `Spent ₱${amount.toFixed(2)} from Checking${expenseNote ? ` (${expenseNote})` : ''}`, 
-                            date: new Date().toLocaleString() 
+                        setRecentActivity((prev: ActivityItem[]) => [
+                          {
+                            type: 'expense',
+                            detail: `Spent ₱${amount.toFixed(2)} from Checking${expenseNote ? ` (${expenseNote})` : ''}`,
+                            date: new Date().toLocaleString()
                           },
-                          ...prev.slice(0, 19) // keep only the latest 20
+                          ...prev.slice(0, 4)
                         ]);
                         setExpenseAmount('');
                         setExpenseNote('');
@@ -280,13 +280,13 @@ useEffect(() => {
                         if (depositAccount === 'checking') setCheckingBalance(prev => prev + amount);
                         if (depositAccount === 'savings') setSavingsBalance(prev => prev + amount);
                         if (depositAccount === 'investments') setInvestmentBalance(prev => prev + amount);
-                        setRecentActivity(prev => [
-                          { 
-                            type: 'deposit', 
-                            detail: `Deposited ₱${amount.toFixed(2)} to ${depositAccount.charAt(0).toUpperCase() + depositAccount.slice(1)}`, 
-                            date: new Date().toLocaleString() 
+                        setRecentActivity((prev: ActivityItem[]) => [
+                          {
+                            type: 'deposit',
+                            detail: `Deposited ₱${amount.toFixed(2)} to ${depositAccount.charAt(0).toUpperCase() + depositAccount.slice(1)}`,
+                            date: new Date().toLocaleString()
                           },
-                          ...prev.slice(0, 19)
+                          ...prev.slice(0, 4) 
                         ]);
                         setDepositAmount('');
                       }}
