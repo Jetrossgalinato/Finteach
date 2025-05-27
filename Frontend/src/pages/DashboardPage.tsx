@@ -171,7 +171,7 @@ useEffect(() => {
     // Calculate new width and height based on mouse position
     if (chatBoxRef.current) {
       const rect = chatBoxRef.current.getBoundingClientRect();
-      const newWidth = Math.max(320, e.clientX - rect.left); 
+      const newWidth = Math.max(500, e.clientX - rect.left); 
       const newHeight = Math.max(320, rect.bottom - e.clientY); 
       setChatBoxWidth(newWidth);
       setChatBoxHeight(newHeight);
