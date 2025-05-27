@@ -69,6 +69,27 @@ const [monthlyBudget, setMonthlyBudget] = useState(() => {
 });
 const [isEditingBudget, setIsEditingBudget] = useState(monthlyBudget === 0);
 
+type Goal = {
+  name: string;
+  current: number;
+  target: number;
+};
+
+const [goals, setGoals] = useState<Goal[]>(() => {
+  const saved = localStorage.getItem('goals');
+  return saved ? JSON.parse(saved) : [];
+});
+const [showAddGoal, setShowAddGoal] = useState(false);
+const [goalName, setGoalName] = useState('');
+const [goalTarget, setGoalTarget] = useState('');
+const [goalCurrent, setGoalCurrent] = useState('');
+
+// Add these states:
+const [editingGoalIdx, setEditingGoalIdx] = useState<number | null>(null);
+const [editGoalName, setEditGoalName] = useState('');
+const [editGoalTarget, setEditGoalTarget] = useState('');
+const [editGoalCurrent, setEditGoalCurrent] = useState('');
+
     // Auth Guard: Check if the user is authenticated
   useEffect(() => {
     const accessToken = localStorage.getItem('accessToken');
@@ -164,6 +185,10 @@ useEffect(() => {
 useEffect(() => {
   localStorage.setItem('monthlyBudget', monthlyBudget.toString());
 }, [monthlyBudget]);
+
+useEffect(() => {
+  localStorage.setItem('goals', JSON.stringify(goals));
+}, [goals]);
 
 useEffect(() => {
   const handleMouseMove = (e: MouseEvent) => {
@@ -429,30 +454,176 @@ useEffect(() => {
                 {/* Financial Goals */}
                 <section className="max-w-3xl mx-auto mt-8 bg-white dark:bg-gray-800 rounded-lg shadow p-6">
                   <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">Financial Goals</h2>
-                  <div className="mb-4">
-                    <span className="block text-gray-700 dark:text-gray-300 mb-1">Emergency Fund</span>
-                    <div className="w-full bg-gray-200 dark:bg-gray-700 rounded h-4 mb-1">
-                      <div className="bg-blue-500 h-4 rounded" style={{ width: '40%' }}></div>
+                  {goals.length === 0 && !showAddGoal && (
+                    <div className="text-gray-500 dark:text-gray-400 mb-4">No goals yet. Start by adding a financial goal!</div>
+                  )}
+
+                  {goals.length > 0 && (
+                    <div className="space-y-4 mb-4">
+                      {goals.map((goal, idx) => (
+                        <div key={idx}>
+                          {editingGoalIdx === idx ? (
+                            <form
+                              className="flex flex-col gap-2 mb-2"
+                              onSubmit={e => {
+                                e.preventDefault();
+                                const updatedGoals = [...goals];
+                                updatedGoals[idx] = {
+                                  name: editGoalName,
+                                  target: parseFloat(editGoalTarget),
+                                  current: editGoalCurrent ? parseFloat(editGoalCurrent) : 0,
+                                };
+                                setGoals(updatedGoals);
+                                setEditingGoalIdx(null);
+                              }}
+                            >
+                              <input
+                                type="text"
+                                value={editGoalName}
+                                onChange={e => setEditGoalName(e.target.value)}
+                                placeholder="Goal name"
+                                className="px-2 py-1 border border-gray-300 dark:border-gray-600 rounded mb-2"
+                                required
+                              />
+                              <input
+                                type="number"
+                                min="1"
+                                step="0.01"
+                                value={editGoalTarget}
+                                onChange={e => setEditGoalTarget(e.target.value)}
+                                placeholder="Target amount"
+                                className="px-2 py-1 border border-gray-300 dark:border-gray-600 rounded mb-2"
+                                required
+                              />
+                              <input
+                                type="number"
+                                min="0"
+                                step="0.01"
+                                value={editGoalCurrent}
+                                onChange={e => setEditGoalCurrent(e.target.value)}
+                                placeholder="Current amount"
+                                className="px-2 py-1 border border-gray-300 dark:border-gray-600 rounded mb-2"
+                              />
+                              <div className="flex gap-2">
+                                <button
+                                  type="submit"
+                                  className="bg-green-500 dark:bg-green-700 text-white px-4 py-2 rounded font-bold hover:bg-green-600 dark:hover:bg-green-800"
+                                >
+                                  Save
+                                </button>
+                                <button
+                                  type="button"
+                                  className="bg-gray-300 dark:bg-gray-600 text-gray-800 dark:text-white px-4 py-2 rounded font-bold hover:bg-gray-400 dark:hover:bg-gray-700"
+                                  onClick={() => setEditingGoalIdx(null)}
+                                >
+                                  Cancel
+                                </button>
+                              </div>
+                            </form>
+                          ) : (
+                            <>
+                              <span className="block text-gray-700 dark:text-gray-300 mb-1">{goal.name}</span>
+                              <div className="w-full bg-gray-200 dark:bg-gray-700 rounded h-4 mb-1">
+                                <div
+                                  className="h-4 rounded"
+                                  style={{
+                                    width: `${Math.min(100, (goal.current / goal.target) * 100)}%`,
+                                    backgroundColor: idx % 2 === 0 ? '#3b82f6' : '#a21caf'
+                                  }}
+                                ></div>
+                              </div>
+                              <div className="flex justify-between text-sm text-gray-600 dark:text-gray-400 items-center">
+                                <span>₱{goal.current.toLocaleString()} / ₱{goal.target.toLocaleString()}</span>
+                                <button
+                                  className="text-xs text-blue-600 dark:text-blue-300 underline ml-2"
+                                  onClick={() => {
+                                    setEditingGoalIdx(idx);
+                                    setEditGoalName(goal.name);
+                                    setEditGoalTarget(goal.target.toString());
+                                    setEditGoalCurrent(goal.current.toString());
+                                  }}
+                                >
+                                  Edit
+                                </button>
+                              </div>
+                            </>
+                          )}
+                        </div>
+                      ))}
                     </div>
-                    <div className="flex justify-between text-sm text-gray-600 dark:text-gray-400">
-                      <span>₱20,000 / ₱50,000</span>
-                      <button className="text-xs text-blue-600 dark:text-blue-300 underline ml-2">Edit</button>
-                    </div>
-                  </div>
-                  <div>
-                    <span className="block text-gray-700 dark:text-gray-300 mb-1">Save for a Car</span>
-                    <div className="w-full bg-gray-200 dark:bg-gray-700 rounded h-4 mb-1">
-                      <div className="bg-purple-500 h-4 rounded" style={{ width: '70%' }}></div>
-                    </div>
-                    <div className="flex justify-between text-sm text-gray-600 dark:text-gray-400">
-                      <span>₱140,000 / ₱200,000</span>
-                      <button className="text-xs text-blue-600 dark:text-blue-300 underline ml-2">Edit</button>
-                    </div>
-                  </div>
-                  {/* Option to add a new goal */}
-                  <button className="mt-4 bg-green-500 dark:bg-green-700 text-white px-4 py-2 rounded font-bold hover:bg-green-600 dark:hover:bg-green-800">
-                    Add Goal
-                  </button>
+                  )}
+
+                  {showAddGoal ? (
+                    <form
+                      className="flex flex-col gap-2 mt-4"
+                      onSubmit={e => {
+                        e.preventDefault();
+                        if (!goalName || !goalTarget) return;
+                        setGoals(prev => [
+                          ...prev,
+                          {
+                            name: goalName,
+                            current: goalCurrent ? parseFloat(goalCurrent) : 0,
+                            target: parseFloat(goalTarget)
+                          }
+                        ]);
+                        setGoalName('');
+                        setGoalTarget('');
+                        setGoalCurrent('');
+                        setShowAddGoal(false);
+                      }}
+                    >
+                      <input
+                        type="text"
+                        value={goalName}
+                        onChange={e => setGoalName(e.target.value)}
+                        placeholder="Goal name (e.g. Emergency Fund)"
+                        className="px-2 py-1 border border-gray-300 dark:border-gray-600 rounded flex-1 mb-2"
+                        required
+                      />
+                      <input
+                        type="number"
+                        min="1"
+                        step="0.01"
+                        value={goalTarget}
+                        onChange={e => setGoalTarget(e.target.value)}
+                        placeholder="Target amount"
+                        className="px-2 py-1 border border-gray-300 dark:border-gray-600 rounded flex-1 mb-2"
+                        required
+                      />
+                      <input
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        value={goalCurrent}
+                        onChange={e => setGoalCurrent(e.target.value)}
+                        placeholder="Current amount"
+                        className="px-2 py-1 border border-gray-300 dark:border-gray-600 rounded flex-1 mb-2"
+                      />
+                      <div className="flex gap-2">
+                        <button
+                          type="submit"
+                          className="bg-green-500 dark:bg-green-700 text-white px-4 py-2 rounded font-bold hover:bg-green-600 dark:hover:bg-green-800"
+                        >
+                          Save
+                        </button>
+                        <button
+                          type="button"
+                          className="bg-gray-300 dark:bg-gray-600 text-gray-800 dark:text-white px-4 py-2 rounded font-bold hover:bg-gray-400 dark:hover:bg-gray-700"
+                          onClick={() => setShowAddGoal(false)}
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </form>
+                  ) : (
+                    <button
+                      className="mt-4 bg-green-500 dark:bg-green-700 text-white px-4 py-2 rounded font-bold hover:bg-green-600 dark:hover:bg-green-800"
+                      onClick={() => setShowAddGoal(true)}
+                    >
+                      Add Goal
+                    </button>
+                  )}
                 </section>
             </div>
             
