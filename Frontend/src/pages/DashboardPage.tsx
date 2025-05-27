@@ -48,6 +48,20 @@ const [recentActivity, setRecentActivity] = useState<ActivityItem[]>(() => {
   return saved ? JSON.parse(saved) : [];
 });
 
+const [monthlyBudget, setMonthlyBudget] = useState(() => {
+  const saved = localStorage.getItem('monthlyBudget');
+  return saved ? parseFloat(saved) : 0;
+});
+const [isEditingBudget, setIsEditingBudget] = useState(monthlyBudget === 0);
+
+const monthlySpending = recentActivity
+  .filter(item => item.type === 'expense')
+  .reduce((sum, item) => {
+    // Extract amount from detail string, e.g. "Spent ₱25.50 from Checking"
+    const match = item.detail.match(/₱([\d,.]+)/);
+    return sum + (match ? parseFloat(match[1].replace(/,/g, '')) : 0);
+  }, 0);
+
     // Auth Guard: Check if the user is authenticated
   useEffect(() => {
     const accessToken = localStorage.getItem('accessToken');
@@ -139,6 +153,10 @@ useEffect(() => {
 useEffect(() => {
   localStorage.setItem('recentActivity', JSON.stringify(recentActivity));
 }, [recentActivity]);
+
+useEffect(() => {
+  localStorage.setItem('monthlyBudget', monthlyBudget.toString());
+}, [monthlyBudget]);
 
 useEffect(() => {
   const handleMouseMove = (e: MouseEvent) => {
@@ -344,17 +362,58 @@ useEffect(() => {
                 {/* Budget Summary */}
                 <section className="max-w-3xl mx-auto mt-8 bg-white dark:bg-gray-800 rounded-lg shadow p-6">
                   <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">Budget Summary</h2>
-                  <div className="mb-4">
-                    <span className="block text-gray-700 dark:text-gray-300 mb-2">This Month's Spending</span>
-                    {/* Simple bar chart visual */}
-                    <div className="w-full bg-gray-200 dark:bg-gray-700 rounded h-4 mb-2">
-                      <div className="bg-green-500 h-4 rounded" style={{ width: '60%' }}></div>
+                  {isEditingBudget ? (
+                    <form
+                      className="flex flex-col md:flex-row gap-4 mb-4"
+                      onSubmit={e => {
+                        e.preventDefault();
+                        if (monthlyBudget > 0) setIsEditingBudget(false);
+                      }}
+                    >
+                      <input
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        value={monthlyBudget === 0 ? '' : monthlyBudget}
+                        onChange={e => setMonthlyBudget(parseFloat(e.target.value))}
+                        placeholder="Enter your monthly budget"
+                        className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded focus:outline-none flex-1"
+                        required
+                      />
+                      <button
+                        type="submit"
+                        className="bg-blue-500 dark:bg-blue-700 text-white px-4 py-2 rounded font-bold hover:bg-blue-600 dark:hover:bg-blue-800"
+                      >
+                        Save
+                      </button>
+                    </form>
+                  ) : (
+                    <div className="mb-4">
+                      <span className="block text-gray-700 dark:text-gray-300 mb-2">This Month's Spending</span>
+                      {/* Bar chart */}
+                      <div className="w-full bg-gray-200 dark:bg-gray-700 rounded h-4 mb-2 relative">
+                        <div
+                          className="bg-green-500 h-4 rounded"
+                          style={{
+                            width: monthlyBudget > 0
+                              ? `${Math.min(100, (monthlySpending / monthlyBudget) * 100)}%`
+                              : '0%',
+                            transition: 'width 0.5s'
+                          }}
+                        ></div>
+                        <button
+                          className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-blue-600 dark:text-blue-300 underline"
+                          onClick={() => setIsEditingBudget(true)}
+                        >
+                          Edit
+                        </button>
+                      </div>
+                      <div className="flex justify-between text-sm text-gray-600 dark:text-gray-400">
+                        <span>₱{monthlySpending.toLocaleString()} spent</span>
+                        <span>₱{monthlyBudget.toLocaleString()} budget</span>
+                      </div>
                     </div>
-                    <div className="flex justify-between text-sm text-gray-600 dark:text-gray-400">
-                      <span>₱6,000 spent</span>
-                      <span>₱10,000 budget</span>
-                    </div>
-                  </div>
+                  )}
                 </section>
 
                 {/* Financial Goals */}
