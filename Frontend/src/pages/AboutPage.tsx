@@ -57,11 +57,11 @@ function AboutPage() {
         <Sidebar handleLogout={handleLogout} />
       {/* Main Content */}
       <div className="flex-1 p-8 space-y-16">
-        <h1 className="text-3xl dark:text-gray-300 font-bold mb-4">About FinTeach</h1>
+        <h1 className="text-3xl dark:text-gray-200 font-bold mb-4">About FinTeach</h1>
         <p className="mb-4 dark:text-gray-300">
           <strong>FinTeach</strong> is a personal finance dashboard designed to help you manage your money, track expenses, set financial goals, and improve your financial literacy.
         </p>
-        <h2 className="text-xl dark:text-gray-300 font-semibold mb-2">Key Features</h2>
+        <h2 className="text-xl dark:text-gray-300 font-semibold mb-2 underline">Key Features</h2>
         <ul className="list-disc pl-6 mb-4 dark:text-gray-300">
           <li>Track checking, savings, and investment balances</li>
           <li>Log expenses and deposits</li>
@@ -69,15 +69,16 @@ function AboutPage() {
           <li>Visualize your budget and spending</li>
           <li>Get advice from our AI Financial Advisor</li>
         </ul>
-        <h2 className="text-xl dark:text-gray-300 font-semibold mb-2">Who Built It</h2>
+        <h2 className="text-xl dark:text-gray-300 font-semibold mb-2 underline">Who Built It</h2>
         <p className="mb-4 dark:text-gray-300">
-          This application was built by the FinTeach team.
+          This application was built by the Jetross Axle Galinato.
         </p>
-        <h2 className="text-xl dark:text-gray-300 font-semibold mb-2">Technologies Used</h2>
-        <ul className="list-disc dark:text-gray-300 pl-6 mb-4">
+        <h2 className="text-xl dark:text-gray-300 font-semibold underline">Technologies Used</h2>
+        <ul className="list-disc dark:text-gray-300 pl-6">
           <li>React</li>
           <li>Tailwind CSS</li>
           <li>Django REST Framework</li>
+          <li>PostgreSQL</li>
         </ul>
         <h2 className="text-xl dark:text-gray-300 font-semibold">Contact</h2>
         <p className="dark:text-gray-300">
