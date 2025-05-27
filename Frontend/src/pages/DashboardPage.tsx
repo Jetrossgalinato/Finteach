@@ -328,9 +328,9 @@ useEffect(() => {
                   ) : (
                     <ul className="space-y-2">
                       {recentActivity.map((item, idx) => (
-                        <li key={idx} className="flex items-center justify-between">
+                        <li key={idx} className="flex items-center justify-between text-gray-800 dark:text-gray-200">
                           <span>{item.detail}</span>
-                          <span className="text-xs text-gray-500">{item.date}</span>
+                          <span className="text-xs text-gray-600 dark:text-gray-300">{item.date}</span>
                         </li>
                       ))}
                     </ul>
