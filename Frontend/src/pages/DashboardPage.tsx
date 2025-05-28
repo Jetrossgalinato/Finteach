@@ -27,26 +27,16 @@ function DashBoard() {
 
   const [expenseAmount, setExpenseAmount] = useState('');
   const [expenseNote, setExpenseNote] = useState('');
-const [checkingBalance, setCheckingBalance] = useState(() => {
-  const saved = localStorage.getItem('checkingBalance');
-  return saved !== null ? parseFloat(saved) : 0.00;
-});
-const [savingsBalance, setSavingsBalance] = useState(() => {
-  const saved = localStorage.getItem('savingsBalance');
-  return saved !== null ? parseFloat(saved) : 0.00;
-});
-const [investmentBalance, setInvestmentBalance] = useState(() => {
-  const saved = localStorage.getItem('investmentBalance');
-  return saved !== null ? parseFloat(saved) : 0.00;
-});
-
   const [depositAmount, setDepositAmount] = useState('');
   const [depositAccount, setDepositAccount] = useState('checking');
 
-const [recentActivity, setRecentActivity] = useState<ActivityItem[]>(() => {
-  const saved = localStorage.getItem('recentActivity');
-  return saved ? JSON.parse(saved) : [];
-});
+  const [checkingBalance, setCheckingBalance] = useState(0);
+  const [savingsBalance, setSavingsBalance] = useState(0);
+  const [investmentBalance, setInvestmentBalance] = useState(0);
+
+  const [recentActivity, setRecentActivity] = useState<ActivityItem[]>([]);
+  const [monthlyBudget, setMonthlyBudget] = useState(0);
+  const [goals, setGoals] = useState<Goal[]>([]);
 
 const now = new Date();
 const currentMonth = now.getMonth();
@@ -63,10 +53,7 @@ const monthlySpending = recentActivity
     return sum + (match ? parseFloat(match[1].replace(/,/g, '')) : 0);
   }, 0);
 
-const [monthlyBudget, setMonthlyBudget] = useState(() => {
-  const saved = localStorage.getItem('monthlyBudget');
-  return saved ? parseFloat(saved) : 0;
-});
+
 const [isEditingBudget, setIsEditingBudget] = useState(monthlyBudget === 0);
 
 type Goal = {
@@ -77,10 +64,6 @@ type Goal = {
 
 const [selectedGoalIdx, setSelectedGoalIdx] = useState<number | null>(null);
 
-const [goals, setGoals] = useState<Goal[]>(() => {
-  const saved = localStorage.getItem('goals');
-  return saved ? JSON.parse(saved) : [];
-});
 const [showAddGoal, setShowAddGoal] = useState(false);
 const [goalName, setGoalName] = useState('');
 const [goalTarget, setGoalTarget] = useState('');
@@ -159,37 +142,25 @@ const [editGoalCurrent, setEditGoalCurrent] = useState('');
 };
 
 useEffect(() => {
-  const savedChecking = localStorage.getItem('checkingBalance');
-  const savedSavings = localStorage.getItem('savingsBalance');
-  const savedInvestments = localStorage.getItem('investmentBalance');
-  setCheckingBalance(savedChecking !== null ? parseFloat(savedChecking) : 0.00);     
-  setSavingsBalance(savedSavings !== null ? parseFloat(savedSavings) : 0.00);         
-  setInvestmentBalance(savedInvestments !== null ? parseFloat(savedInvestments) : 0.00); 
+  const fetchDashboardData = async () => {
+    const accessToken = localStorage.getItem('accessToken');
+    if (!accessToken) return;
+
+    const res = await fetch('http://127.0.0.1:8000/api/dashboard/', {
+      headers: { Authorization: `Bearer ${accessToken}` }
+    });
+    if (res.ok) {
+      const data = await res.json();
+      setCheckingBalance(data.checking_balance);
+      setSavingsBalance(data.savings_balance);
+      setInvestmentBalance(data.investment_balance);
+      setRecentActivity(data.recent_activity);
+      setMonthlyBudget(data.monthly_budget);
+      setGoals(data.goals);
+    }
+  };
+  fetchDashboardData();
 }, []);
-
-useEffect(() => {
-  localStorage.setItem('checkingBalance', checkingBalance.toString());
-}, [checkingBalance]);
-
-useEffect(() => {
-  localStorage.setItem('savingsBalance', savingsBalance.toString());
-}, [savingsBalance]);
-
-useEffect(() => {
-  localStorage.setItem('investmentBalance', investmentBalance.toString());
-}, [investmentBalance]);
-
-useEffect(() => {
-  localStorage.setItem('recentActivity', JSON.stringify(recentActivity));
-}, [recentActivity]);
-
-useEffect(() => {
-  localStorage.setItem('monthlyBudget', monthlyBudget.toString());
-}, [monthlyBudget]);
-
-useEffect(() => {
-  localStorage.setItem('goals', JSON.stringify(goals));
-}, [goals]);
 
 useEffect(() => {
   const handleMouseMove = (e: MouseEvent) => {
