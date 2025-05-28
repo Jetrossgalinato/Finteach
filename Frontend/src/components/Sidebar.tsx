@@ -40,23 +40,18 @@ const Sidebar: React.FC<SidebarProps> = ({ handleLogout }) => {
           <nav className="flex-1 p-4">
             <ul className="space-y-4">
               <li>
-                <Link to="/home" className="block px-4 py-2 rounded hover:bg-gray-700" onClick={() => setOpen(false)}>
+                <Link to="/home" className="block px-4 py-2 rounded hover:bg-gray-700 dark:rounded hover:bg-gray-900" onClick={() => setOpen(false)}>
                   Home
                 </Link>
               </li>
               <li>
-                <Link to="/about" className="block px-4 py-2 rounded hover:bg-gray-700" onClick={() => setOpen(false)}>
+                <Link to="/about" className="block px-4 py-2 rounded hover:bg-gray-700 dark:rounded hover:bg-gray-900" onClick={() => setOpen(false)}>
                   About
                 </Link>
               </li>
               <li>
-                <Link to="/dashboard" className="block px-4 py-2 rounded hover:bg-gray-700" onClick={() => setOpen(false)}>
+                <Link to="/dashboard" className="block px-4 py-2 rounded hover:bg-gray-700 dark:rounded hover:bg-gray-900" onClick={() => setOpen(false)}>
                   Dashboard
-                </Link>
-              </li>
-              <li>
-                <Link to="/settings" className="block px-4 py-2 rounded hover:bg-gray-700" onClick={() => setOpen(false)}>
-                  Settings
                 </Link>
               </li>
             </ul>
