@@ -3,7 +3,7 @@ from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
 )
-from .views import RegisterView, get_user_info, ai_chat
+from .views import RegisterView, get_user_info, ai_chat, dashboard
 
 urlpatterns = [
     path('api/register/', RegisterView.as_view(), name='register'),
@@ -11,4 +11,5 @@ urlpatterns = [
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api/user/', get_user_info, name='get_user_info'),
     path('api/ai-chat/', ai_chat, name='ai_chat'),
+    path('api/dashboard/',dashboard, name='dashboard'),
 ]

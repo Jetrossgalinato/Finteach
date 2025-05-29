@@ -146,7 +146,7 @@ useEffect(() => {
     const accessToken = localStorage.getItem('accessToken');
     if (!accessToken) return;
 
-    const res = await fetch('http://127.0.0.1:8000/api/dashboard/', {
+    const res = await fetch('http://127.0.0.1:8000/accounts/api/dashboard/', {
       headers: { Authorization: `Bearer ${accessToken}` }
     });
     if (res.ok) {
