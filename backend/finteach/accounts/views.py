@@ -14,6 +14,8 @@ from rest_framework import status
 import requests
 import os
 import logging
+import decimal
+
 
 class RegisterView(generics.CreateAPIView):
     queryset = get_user_model().objects.all()
@@ -121,7 +123,7 @@ def add_transaction(request):
     user = request.user
     data = request.data
     account, _ = Account.objects.get_or_create(user=user)
-    amount = float(data.get("amount", 0))
+    amount = decimal.Decimal(str(data.get("amount", 0)))
     account_type = data.get("account")
     note = data.get("note", "")
     goal_id = data.get("goal_id")

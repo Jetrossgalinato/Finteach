@@ -57,6 +57,7 @@ const monthlySpending = recentActivity
 const [isEditingBudget, setIsEditingBudget] = useState(monthlyBudget === 0);
 
 type Goal = {
+  id: number;
   name: string;
   current: number;
   target: number;
@@ -141,24 +142,25 @@ const [editGoalCurrent, setEditGoalCurrent] = useState('');
   setIsResizing(true);
 };
 
-useEffect(() => {
-  const fetchDashboardData = async () => {
-    const accessToken = localStorage.getItem('accessToken');
-    if (!accessToken) return;
+const fetchDashboardData = async () => {
+  const accessToken = localStorage.getItem('accessToken');
+  if (!accessToken) return;
 
-    const res = await fetch('http://127.0.0.1:8000/accounts/api/dashboard/', {
-      headers: { Authorization: `Bearer ${accessToken}` }
-    });
-    if (res.ok) {
-      const data = await res.json();
-      setCheckingBalance(data.checking_balance);
-      setSavingsBalance(data.savings_balance);
-      setInvestmentBalance(data.investment_balance);
-      setRecentActivity(data.recent_activity);
-      setMonthlyBudget(data.monthly_budget);
-      setGoals(data.goals);
-    }
-  };
+  const res = await fetch('http://127.0.0.1:8000/accounts/api/dashboard/', {
+    headers: { Authorization: `Bearer ${accessToken}` }
+  });
+  if (res.ok) {
+    const data = await res.json();
+    setCheckingBalance(data.checking_balance);
+    setSavingsBalance(data.savings_balance);
+    setInvestmentBalance(data.investment_balance);
+    setRecentActivity(data.recent_activity);
+    setMonthlyBudget(data.monthly_budget);
+    setGoals(data.goals);
+  }
+};
+
+useEffect(() => {
   fetchDashboardData();
 }, []);
 
@@ -247,22 +249,31 @@ useEffect(() => {
                   <section className="flex-1 bg-white dark:bg-gray-800 rounded-lg shadow p-6">
                     <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">Enter Today's Expense</h2>
                     <form
-                      onSubmit={e => {
-                        e.preventDefault();
-                        const amount = parseFloat(expenseAmount);
-                        if (isNaN(amount) || amount <= 0) return;
-                        setCheckingBalance(prev => Math.max(0, prev - amount));
-                        setRecentActivity((prev: ActivityItem[]) => [
-                          {
-                            type: 'expense',
-                            detail: `Spent ₱${amount.toFixed(2)} from Checking${expenseNote ? ` (${expenseNote})` : ''}`,
-                            date: new Date().toLocaleString()
-                          },
-                          ...prev.slice(0, 4)
-                        ]);
+                      onSubmit={async e => {
+                      e.preventDefault();
+                      const amount = parseFloat(expenseAmount);
+                      if (isNaN(amount) || amount <= 0) return;
+                      const accessToken = localStorage.getItem('accessToken');
+                      const res = await fetch('http://127.0.0.1:8000/accounts/api/transaction/', {
+                        method: 'POST',
+                        headers: {
+                          'Content-Type': 'application/json',
+                          Authorization: `Bearer ${accessToken}`,
+                        },
+                        body: JSON.stringify({
+                          type: 'expense',
+                          account: 'checking',
+                          amount,
+                          note: expenseNote,
+                        }),
+                      });
+                      if (res.ok) {
+                        // Re-fetch dashboard data to update balances and activity
+                        await fetchDashboardData();
                         setExpenseAmount('');
                         setExpenseNote('');
-                      }}
+                      }
+                    }}
                       className="flex flex-col gap-4"
                     >
                       <input
@@ -295,42 +306,38 @@ useEffect(() => {
                   <section className="flex-1 bg-white dark:bg-gray-800 rounded-lg shadow p-6">
                     <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">Deposit Funds</h2>
                     <form
-                      onSubmit={e => {
-                        e.preventDefault();
-                        const amount = parseFloat(depositAmount);
-                        if (isNaN(amount) || amount <= 0) return;
-
-                        if (depositAccount === 'checking') setCheckingBalance(prev => prev + amount);
-                        if (depositAccount === 'savings') {
-                          setSavingsBalance(prev => prev + amount);
-
-                          // If a goal is selected, add to that goal's current value
-                          if (selectedGoalIdx !== null && goals[selectedGoalIdx]) {
-                            setGoals(prevGoals => {
-                              const updatedGoals = [...prevGoals];
-                              updatedGoals[selectedGoalIdx] = {
-                                ...updatedGoals[selectedGoalIdx],
-                                current: updatedGoals[selectedGoalIdx].current + amount,
-                              };
-                              return updatedGoals;
-                            });
-                          }
-                        }
-                        if (depositAccount === 'investments') setInvestmentBalance(prev => prev + amount);
-
-                        setRecentActivity((prev: ActivityItem[]) => [
-                          {
-                            type: 'deposit',
-                            detail: `Deposited ₱${amount.toFixed(2)} to ${depositAccount.charAt(0).toUpperCase() + depositAccount.slice(1)}`
-                              + (depositAccount === 'savings' && selectedGoalIdx !== null && goals[selectedGoalIdx]
-                                  ? ` (Goal: ${goals[selectedGoalIdx].name})` : ''),
-                            date: new Date().toLocaleString()
-                          },
-                          ...prev.slice(0, 4)
-                        ]);
+                      onSubmit={async e => {
+                      e.preventDefault();
+                      const amount = parseFloat(depositAmount);
+                      if (isNaN(amount) || amount <= 0) return;
+                      const accessToken = localStorage.getItem('accessToken');
+                      const body: {
+                        type: string;
+                        account: string;
+                        amount: number;
+                        goal_id?: number;
+                      } = {
+                        type: 'deposit',
+                        account: depositAccount,
+                        amount,
+                      };
+                      if (depositAccount === 'savings' && selectedGoalIdx !== null && goals[selectedGoalIdx]) {
+                        body.goal_id = goals[selectedGoalIdx].id;
+                      }
+                      const res = await fetch('http://127.0.0.1:8000/accounts/api/transaction/', {
+                        method: 'POST',
+                        headers: {
+                          'Content-Type': 'application/json',
+                          Authorization: `Bearer ${accessToken}`,
+                        },
+                        body: JSON.stringify(body),
+                      });
+                      if (res.ok) {
+                        await fetchDashboardData();
                         setDepositAmount('');
                         setSelectedGoalIdx(null);
-                      }}
+                      }
+                    }}
                       className="flex flex-col gap-4"
                     >
                       <select
@@ -406,9 +413,21 @@ useEffect(() => {
                   {isEditingBudget ? (
                     <form
                       className="flex flex-col md:flex-row gap-4 mb-4"
-                      onSubmit={e => {
+                      onSubmit={async e => {
                         e.preventDefault();
-                        if (monthlyBudget > 0) setIsEditingBudget(false);
+                        const accessToken = localStorage.getItem('accessToken');
+                        const res = await fetch('http://127.0.0.1:8000/accounts/api/budget/', {
+                          method: 'PATCH',
+                          headers: {
+                            'Content-Type': 'application/json',
+                            Authorization: `Bearer ${accessToken}`,
+                          },
+                          body: JSON.stringify({ monthly_budget: monthlyBudget }),
+                        });
+                        if (res.ok) {
+                          await fetchDashboardData();
+                          setIsEditingBudget(false);
+                        }
                       }}
                     >
                       <input
@@ -471,16 +490,26 @@ useEffect(() => {
                           {editingGoalIdx === idx ? (
                             <form
                               className="flex flex-col gap-2 mb-2"
-                              onSubmit={e => {
+                              onSubmit={async e => {
                                 e.preventDefault();
-                                const updatedGoals = [...goals];
-                                updatedGoals[idx] = {
-                                  name: editGoalName,
-                                  target: parseFloat(editGoalTarget),
-                                  current: editGoalCurrent ? parseFloat(editGoalCurrent) : 0,
-                                };
-                                setGoals(updatedGoals);
-                                setEditingGoalIdx(null);
+                                const accessToken = localStorage.getItem('accessToken');
+                                const goalId = goals[idx].id;
+                                const res = await fetch(`http://127.0.0.1:8000/accounts/api/goals/${goalId}/`, {
+                                  method: 'PATCH',
+                                  headers: {
+                                    'Content-Type': 'application/json',
+                                    Authorization: `Bearer ${accessToken}`,
+                                  },
+                                  body: JSON.stringify({
+                                    name: editGoalName,
+                                    target: parseFloat(editGoalTarget),
+                                    current: editGoalCurrent ? parseFloat(editGoalCurrent) : 0,
+                                  }),
+                                });
+                                if (res.ok) {
+                                  await fetchDashboardData();
+                                  setEditingGoalIdx(null);
+                                }
                               }}
                             >
                               <input
@@ -551,6 +580,24 @@ useEffect(() => {
                                 >
                                   Edit
                                 </button>
+                                <button
+                                  className="text-xs text-red-600 dark:text-red-300 underline ml-2"
+                                  onClick={async () => {
+                                    const accessToken = localStorage.getItem('accessToken');
+                                    const goalId = goal.id;
+                                    const res = await fetch(`http://127.0.0.1:8000/accounts/api/goals/${goalId}/delete/`, {
+                                      method: 'DELETE',
+                                      headers: {
+                                        Authorization: `Bearer ${accessToken}`,
+                                      },
+                                    });
+                                    if (res.ok) {
+                                      await fetchDashboardData();
+                                    }
+                                  }}
+                                >
+                                  Delete
+                                </button>
                               </div>
                             </>
                           )}
@@ -562,21 +609,29 @@ useEffect(() => {
                   {showAddGoal ? (
                     <form
                       className="flex flex-col gap-2 mt-4"
-                      onSubmit={e => {
+                      onSubmit={async e => {
                         e.preventDefault();
                         if (!goalName || !goalTarget) return;
-                        setGoals(prev => [
-                          ...prev,
-                          {
+                        const accessToken = localStorage.getItem('accessToken');
+                        const res = await fetch('http://127.0.0.1:8000/accounts/api/goals/', {
+                          method: 'POST',
+                          headers: {
+                            'Content-Type': 'application/json',
+                            Authorization: `Bearer ${accessToken}`,
+                          },
+                          body: JSON.stringify({
                             name: goalName,
+                            target: parseFloat(goalTarget),
                             current: goalCurrent ? parseFloat(goalCurrent) : 0,
-                            target: parseFloat(goalTarget)
-                          }
-                        ]);
-                        setGoalName('');
-                        setGoalTarget('');
-                        setGoalCurrent('');
-                        setShowAddGoal(false);
+                          }),
+                        });
+                        if (res.ok) {
+                          await fetchDashboardData();
+                          setGoalName('');
+                          setGoalTarget('');
+                          setGoalCurrent('');
+                          setShowAddGoal(false);
+                        }
                       }}
                     >
                       <input
